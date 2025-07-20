@@ -61,7 +61,7 @@ const GuarantorDetailsPage: React.FC = () => {
               <div className="bg-blue-100 p-3 rounded-full ml-4">
                 <User className="h-8 w-8 text-blue-600" />
               </div>
-              <h1 className="text-xl md:text-xl md:text-3xl font-bold text-gray-800">تفاصيل الكفيل</h1>
+              <h1 className="text-xl  md:text-3xl font-bold text-gray-800">تفاصيل الكفيل</h1>
             </div>
             <div className="w-full h-1 bg-gradient-to-r from-blue-500 to-indigo-500 mx-auto rounded-full"></div>
           </div>
@@ -178,6 +178,7 @@ const GuarantorDetailsPage: React.FC = () => {
                           <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">تاريخ انتهاء الإقامة</th>
                           <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">حالة الإقامة</th>
                           <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">المبلغ</th>
+                          <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">سجل المدفوعات</th>
                         </tr>
                       </thead>
                       <tbody className="bg-white divide-y divide-gray-200">
@@ -195,6 +196,19 @@ const GuarantorDetailsPage: React.FC = () => {
                                 </span>
                               </td>
                               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{worker.price} ريال</td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {worker.paysHistory && Object.keys(worker.paysHistory).length > 0 ? (
+                                  <div>
+                                    {Object.entries(worker.paysHistory).map(([year, months]) => (
+                                      <div key={year}>
+                                        <span className="font-semibold">{year}:</span> {Array.isArray(months) ? months.sort((a, b) => a - b).map((month) => month.toString().padStart(2, '0')).join(', ') : ''}
+                                      </div>
+                                    ))}
+                                  </div>
+                                ) : (
+                                  <span className="text-gray-400">لا توجد مدفوعات</span>
+                                )}
+                              </td>
                             </tr>
                           );
                         })}

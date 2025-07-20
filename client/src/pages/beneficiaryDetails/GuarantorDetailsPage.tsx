@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, User, Phone, CreditCard, Calendar, Users, DollarSign, FileText, Edit, Trash2, Plus } from 'lucide-react';
 import hotToast from '../../common/hotToast';
+import { useGetGuarantor } from '../Dashboard/hooks/bag/useGetGuarantor';
 
 interface Worker {
   _id: string;
@@ -24,37 +25,20 @@ interface Guarantor {
 }
 
 const GuarantorDetailsPage: React.FC = () => {
-  const { cardNumber } = useParams<{ cardNumber: string }>();
+  const { cardId } = useParams<{ cardId: string }>();
   const navigate = useNavigate();
-  const [guarantor, setGuarantor] = useState<Guarantor | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { guarantor, loading, error, refetch } = useGetGuarantor(cardId || '');
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear().toString());
   const [selectedMonth, setSelectedMonth] = useState((new Date().getMonth() + 1).toString().padStart(2, '0'));
 
-  useEffect(() => {
-    fetchGuarantorDetails();
-  }, [cardNumber]);
-
-  const fetchGuarantorDetails = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch(`/guarantor/${cardNumber}`);
-      if (!response.ok) {
-        throw new Error('لم يتم العثور على الكفيل');
-      }
-      const data = await response.json();
-      setGuarantor(data);
-    } catch (error: any) {
-      setError(error.message);
-      hotToast({ type: "error", message: error.message });
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  // حذف useEffect وfetchGuarantorDetails وstate المرتبطة بها
+ useEffect(() => {
+  refetch()
+ }, []);
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('ar-SA');
+    const date = new Date(dateString);
+    // صيغة اليوم/الشهر/السنة بالميلادي
+    return date.toLocaleDateString('ar-EG', { year: 'numeric', month: '2-digit', day: '2-digit' });
   };
 
   const formatPhone = (phone: number) => {
@@ -117,7 +101,6 @@ const GuarantorDetailsPage: React.FC = () => {
       }
     }
     
-    setGuarantor(updatedGuarantor);
   };
 
   const isMonthPaid = (worker: Worker, year: string, month: number) => {
@@ -185,12 +168,20 @@ const GuarantorDetailsPage: React.FC = () => {
 
           {/* Guarantor Information */}
           <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200 mb-6">
-            <h2 className="text-xl font-semibold text-gray-800 mb-6 flex items-center">
-              <div className="bg-blue-100 p-2 rounded-lg ml-3">
-                <User className="h-5 w-5 text-blue-600" />
-              </div>
-              بيانات الكفيل
-            </h2>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-semibold text-gray-800 flex items-center">
+                <div className="bg-blue-100 p-2 rounded-lg ml-3">
+                  <User className="h-5 w-5 text-blue-600" />
+                </div>
+                بيانات الكفيل
+              </h2>
+              <button
+                onClick={() => navigate(`/edit-guarantor/${guarantor.cardNumber}`)}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg shadow transition-colors duration-200"
+              >
+                تعديل البيانات
+              </button>
+            </div>
             
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
               <div className="bg-white p-4 rounded-lg border border-gray-200">
@@ -317,47 +308,7 @@ const GuarantorDetailsPage: React.FC = () => {
                       {/* Payment Controls */}
                       <div className="border-t border-gray-200 pt-4">
                         <h4 className="text-sm font-medium text-gray-700 mb-3">إدارة المدفوعات:</h4>
-                        <div className="flex gap-4 mb-4">
-                          <div>
-                            <label className="block text-xs text-gray-500 mb-1">السنة</label>
-                            <select
-                              value={selectedYear}
-                              onChange={(e) => setSelectedYear(e.target.value)}
-                              className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"
-                            >
-                              {Array.from({ length: 10 }, (_, i) => new Date().getFullYear() - 2 + i).map(year => (
-                                <option key={year} value={year}>{year}</option>
-                              ))}
-                            </select>
-                          </div>
-                          <div>
-                            <label className="block text-xs text-gray-500 mb-1">الشهر</label>
-                            <select
-                              value={selectedMonth}
-                              onChange={(e) => setSelectedMonth(e.target.value)}
-                              className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"
-                            >
-                              {Array.from({ length: 12 }, (_, i) => i + 1).map(month => (
-                                <option key={month} value={month.toString().padStart(2, '0')}>{month}</option>
-                              ))}
-                            </select>
-                          </div>
-                          <div className="flex items-end">
-                            <button
-                              type="button"
-                              onClick={() => handlePaymentStatusChange(index, selectedYear, parseInt(selectedMonth), !isMonthPaid(worker, selectedYear, parseInt(selectedMonth)))}
-                              className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
-                                isMonthPaid(worker, selectedYear, parseInt(selectedMonth))
-                                  ? 'bg-red-100 text-red-700 hover:bg-red-200'
-                                  : 'bg-green-100 text-green-700 hover:bg-green-200'
-                              }`}
-                            >
-                              {isMonthPaid(worker, selectedYear, parseInt(selectedMonth)) ? 'إلغاء الدفع' : 'تحديد كمدفوع'}
-                            </button>
-                          </div>
-                        </div>
-
-                        {/* Payment History Display */}
+                        {/* تم تعطيل التعديل، فقط عرض المدفوعات */}
                         <div className="bg-gray-50 rounded-lg p-3">
                           <h5 className="text-sm font-medium text-gray-700 mb-2">المدفوعات المسجلة:</h5>
                           {Object.keys(worker.paysHistory || {}).length > 0 ? (

@@ -163,7 +163,7 @@ const RecordsPage: React.FC = () => {
               <div className="bg-blue-100 p-3 rounded-full ml-4">
                 <FileText className="h-8 w-8 text-blue-600" />
               </div>
-              <h1 className="text-xl md:text-xl md:text-3xl font-bold text-gray-800">سجل الكفيلين والعملاء</h1>
+              <h1 className="text-xl  md:text-3xl font-bold text-gray-800">سجل الكفيلين والعملاء</h1>
             </div>
             <div className="w-full h-1 bg-gradient-to-r from-blue-500 to-indigo-500 mx-auto rounded-full"></div>
           </div>

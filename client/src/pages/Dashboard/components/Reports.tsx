@@ -22,7 +22,7 @@ const Reports: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear().toString());
   const [selectedMonth, setSelectedMonth] = useState((new Date().getMonth() + 1).toString().padStart(2, '0'));
-
+ console.log(workers)
   // إنشاء قائمة السنوات (من 2025 إلى 2035)
   const years = Array.from({ length: 11 }, (_, i) => (2025 + i).toString());
   
@@ -122,7 +122,7 @@ const Reports: React.FC = () => {
               <div className="bg-green-100 p-3 rounded-full ml-4">
                 <Users className="h-8 w-8 text-green-600" />
               </div>
-              <h1 className="text-xl md:text-xl md:text-3xl font-bold text-gray-800">تقارير الدفع الشهرية</h1>
+              <h1 className="text-xl  md:text-3xl font-bold text-gray-800">تقارير الدفع الشهرية</h1>
             </div>
             <div className="w-full h-1 bg-gradient-to-r from-green-500 to-emerald-500 mx-auto rounded-full"></div>
           </div>

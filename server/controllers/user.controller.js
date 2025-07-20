@@ -293,7 +293,10 @@ export const getWorkerWithGuarantor = async (req,res) =>{
 export const getAllWorkers = async  (req,res) =>{
   try {
      const workers = (await User.find({})).map(guarantor=>{
-      return guarantor.workers 
+     let editedGuarantor =  guarantor.workers.map(worker=>{
+        return {...worker._doc,guarantorName:guarantor.fullName}
+      })
+      return editedGuarantor
      }).flat()
    
      return res.status(200).json(workers)

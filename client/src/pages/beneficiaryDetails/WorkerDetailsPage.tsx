@@ -38,7 +38,17 @@ const WorkerDetailsPage: React.FC = () => {
         throw new Error('لم يتم العثور على العامل');
       }
       const data = await response.json();
-      setWorker(data);
+      // تعديل هنا: إعادة تشكيل البيانات
+      let workerData = data.worker;
+      if (data.guarantor) {
+        workerData = {
+          ...workerData,
+          guarantorName: data.guarantor.fullName,
+          guarantorCardNumber: data.guarantor.cardNumber,
+          guarantorPhone: data.guarantor.phone,
+        };
+      }
+      setWorker(workerData);
     } catch (error: any) {
       setError(error.message);
       hotToast({ type: "error", message: error.message });
@@ -48,7 +58,7 @@ const WorkerDetailsPage: React.FC = () => {
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('ar-SA');
+    return new Date(dateString).toLocaleDateString('ar-EG', { year: 'numeric', month: '2-digit', day: '2-digit' });
   };
 
   const formatPhone = (phone: number) => {
@@ -85,36 +95,7 @@ const WorkerDetailsPage: React.FC = () => {
     };
   };
 
-  const handlePaymentStatusChange = (year: string, month: number, isPaid: boolean) => {
-    if (!worker) return;
-
-    const updatedWorker = { ...worker };
-    if (!updatedWorker.paysHistory) {
-      updatedWorker.paysHistory = {};
-    }
-    
-    if (!updatedWorker.paysHistory[year]) {
-      updatedWorker.paysHistory[year] = [];
-    }
-    
-    if (isPaid) {
-      if (!updatedWorker.paysHistory[year].includes(month)) {
-        updatedWorker.paysHistory[year].push(month);
-        updatedWorker.paysHistory[year].sort((a, b) => a - b);
-      }
-    } else {
-      updatedWorker.paysHistory[year] = updatedWorker.paysHistory[year].filter(m => m !== month);
-      if (updatedWorker.paysHistory[year].length === 0) {
-        delete updatedWorker.paysHistory[year];
-      }
-    }
-    
-    setWorker(updatedWorker);
-  };
-
-  const isMonthPaid = (year: string, month: number) => {
-    return worker?.paysHistory?.[year]?.includes(month) || false;
-  };
+  // احذف دوال handlePaymentStatusChange و isMonthPaid وأي أكواد مرتبطة بها
 
   if (loading) {
     return (
@@ -278,65 +259,47 @@ const WorkerDetailsPage: React.FC = () => {
               </div>
               سجل المدفوعات
             </h2>
-            
-            {/* Payment Controls */}
-            <div className="flex gap-4 mb-6">
-              <div>
-                <label className="block text-xs text-gray-500 mb-1">السنة</label>
-                <select
-                  value={selectedYear}
-                  onChange={(e) => setSelectedYear(e.target.value)}
-                  className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
-                >
-                  {Array.from({ length: 10 }, (_, i) => new Date().getFullYear() - 2 + i).map(year => (
-                    <option key={year} value={year}>{year}</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="block text-xs text-gray-500 mb-1">الشهر</label>
-                <select
-                  value={selectedMonth}
-                  onChange={(e) => setSelectedMonth(e.target.value)}
-                  className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
-                >
-                  {Array.from({ length: 12 }, (_, i) => i + 1).map(month => (
-                    <option key={month} value={month.toString().padStart(2, '0')}>{month}</option>
-                  ))}
-                </select>
-              </div>
-              <div className="flex items-end">
-                <button
-                  type="button"
-                  onClick={() => handlePaymentStatusChange(selectedYear, parseInt(selectedMonth), !isMonthPaid(selectedYear, parseInt(selectedMonth)))}
-                  className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
-                    isMonthPaid(selectedYear, parseInt(selectedMonth))
-                      ? 'bg-red-100 text-red-700 hover:bg-red-200'
-                      : 'bg-green-100 text-green-700 hover:bg-green-200'
-                  }`}
-                >
-                  {isMonthPaid(selectedYear, parseInt(selectedMonth)) ? 'إلغاء الدفع' : 'تحديد كمدفوع'}
-                </button>
-              </div>
-            </div>
-
             {/* Payment History Display */}
-            <div className="bg-white rounded-lg p-4">
+            <div className="bg-white rounded-lg p-4 mb-4">
               <h4 className="text-sm font-medium text-gray-700 mb-3">المدفوعات المسجلة:</h4>
               {Object.keys(worker.paysHistory || {}).length > 0 ? (
-                <div className="space-y-2">
-                  {Object.entries(worker.paysHistory || {}).map(([year, months]) => (
-                    <div key={year} className="text-sm">
-                      <span className="font-medium text-gray-700">{year}:</span>
-                      <span className="text-gray-600 mr-2">
-                        {months.sort((a, b) => a - b).map(month => month.toString().padStart(2, '0')).join(', ')}
-                      </span>
-                    </div>
-                  ))}
-                </div>
+                <table className="min-w-full text-sm text-right border">
+                  <thead>
+                    <tr className="bg-gray-50">
+                      <th className="px-3 py-2 border-b font-semibold">السنة</th>
+                      <th className="px-3 py-2 border-b font-semibold">الشهور المدفوعة</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {Object.entries(worker.paysHistory || {}).map(([year, months]) => (
+                      <tr key={year}>
+                        <td className="px-3 py-2 border-b">{year}</td>
+                        <td className="px-3 py-2 border-b">
+                          {months.sort((a, b) => a - b).map(month => month.toString().padStart(2, '0')).join(', ')}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               ) : (
                 <p className="text-sm text-gray-500">لا توجد مدفوعات مسجلة</p>
               )}
+            </div>
+            {/* زر تعديل البيانات */}
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={() => {
+                  if (worker.guarantorCardNumber) {
+                    navigate(`/edit-guarantor/${worker.guarantorCardNumber}`);
+                  } else {
+                    hotToast({ type: 'error', message: 'لا يوجد رقم بطاقة للكفيل' });
+                  }
+                }}
+                className="px-6 py-2 bg-blue-600 text-white rounded-md font-medium hover:bg-blue-700 transition-all"
+              >
+                تعديل البيانات
+              </button>
             </div>
           </div>
         </div>

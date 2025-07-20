@@ -238,7 +238,7 @@ const EditGuarantorPage: React.FC = () => {
               <div className="bg-emerald-100 p-3 rounded-full ml-4">
                 <Edit className="h-8 w-8 text-emerald-600" />
               </div>
-              <h1 className="text-xl md:text-xl md:text-3xl font-bold text-gray-800">تعديل بيانات الكفيل</h1>
+              <h1 className="text-xl  md:text-3xl font-bold text-gray-800">تعديل بيانات الكفيل</h1>
             </div>
             <div className="w-full h-1 bg-gradient-to-r from-emerald-500 to-blue-500 mx-auto rounded-full"></div>
           </div>
