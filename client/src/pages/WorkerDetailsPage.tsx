@@ -49,7 +49,7 @@ const WorkerDetailsPage: React.FC = () => {
       status: 'مجددة',
       color: 'bg-green-100 text-green-800 border-green-200',
       bgColor: 'bg-green-50'
-    };
+    }; 
   };
 
   return (
