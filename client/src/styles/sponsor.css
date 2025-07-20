@@ -1,0 +1,276 @@
+body {
+  margin: 0;
+  font-family: "Cairo", sans-serif;
+  background-color: #eaf4ff;
+}
+
+.navbar {
+  background: linear-gradient(90deg, #1976d2 0%, #42a5f5 100%);
+  color: #fff;
+  padding: 18px 10px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  box-shadow: 0 4px 16px rgba(25, 118, 210, 0.18);
+  border-bottom-left-radius: 18px;
+  border-bottom-right-radius: 18px;
+  position: relative;
+}
+
+.navbar h1 {
+  margin: 0 auto;
+  font-size: 28px;
+  color: #fff !important;
+  letter-spacing: 1px;
+  text-shadow: 0 2px 8px rgba(33, 150, 243, 0.18);
+  flex: 1 1 100%;
+  text-align: center;
+  order: 2;
+}
+
+.navbar .actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+  order: 3;
+  margin-right: auto;
+  position: relative;
+}
+
+.search-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.search-wrapper input {
+  padding: 12px 44px 12px 16px;
+  border-radius: 22px;
+  border: none;
+  width: 240px;
+  font-size: 16px;
+  color: #333;
+  background: #fff;
+  box-shadow: 0 2px 10px rgba(33, 150, 243, 0.1);
+  margin-left: 8px;
+  transition: box-shadow 0.2s;
+  outline: none;
+}
+
+.search-wrapper input:focus {
+  box-shadow: 0 4px 16px rgba(33, 150, 243, 0.18);
+}
+
+.navbar .logout-btn {
+  background: #1976d2;
+  color: #fff;
+  border: none;
+  border-radius: 22px;
+  min-width: 60px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+  margin-left: 8px;
+  box-shadow: 0 2px 12px rgba(33, 150, 243, 0.18);
+  position: relative;
+  border: 2px solid #fff;
+}
+.navbar .logout-btn:hover {
+  background: #fff;
+  color: #1976d2;
+  box-shadow: 0 4px 18px rgba(33, 150, 243, 0.22);
+}
+.navbar .logout-btn[title]:hover:after {
+  content: attr(title);
+  position: absolute;
+  top: 110%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1976d2;
+  color: #fff;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  white-space: nowrap;
+  z-index: 10;
+  box-shadow: 0 2px 8px rgba(33, 150, 243, 0.18);
+}
+
+.container {
+  padding: 24px 8px 30px 8px;
+  max-width: 1200px;
+  margin: 0 auto;
+  overflow-x: auto;
+}
+
+.dashboard-controls {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+  margin-bottom: 18px;
+}
+
+th,
+td {
+  padding: 8px 6px;
+  border: 1px solid #dee2e6;
+  text-align: center;
+  vertical-align: middle;
+  font-size: 15px;
+}
+
+th {
+  background-color: #bbdefb;
+  color: #0d47a1;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+input[type="text"],
+input[type="number"] {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  box-sizing: border-box;
+  background: #f8fbff;
+  transition: border 0.2s;
+}
+input[type="text"]:focus,
+input[type="number"]:focus {
+  border: 1.5px solid #1976d2;
+  outline: none;
+}
+td input[placeholder="اسم العامل"] {
+  width: 90px;
+  min-width: 70px;
+  max-width: 110px;
+}
+td input[placeholder="رقم الجوال"],
+td input[placeholder="رقم الإقامة"],
+td input[placeholder="ملاحظة"] {
+  width: 130px;
+  min-width: 110px;
+  max-width: 160px;
+}
+td input[type="number"] {
+  width: 40px;
+  min-width: 35px;
+  max-width: 50px;
+  padding: 4px;
+  text-align: center;
+}
+
+td input.name,
+td input.phone,
+td input.residency,
+td input.sponsor,
+td input.note {
+  min-width: 100px;
+}
+td input[type="number"] {
+  width: 70px;
+  padding: 6px 4px;
+  text-align: center;
+}
+
+button {
+  background-color: #1976d2;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  font-size: 14px;
+}
+
+button:hover {
+  background-color: #0d47a1;
+}
+
+.section-title {
+  margin-top: 40px;
+  font-size: 22px;
+  color: #333;
+  font-weight: bold;
+}
+
+.sponsor-table {
+  margin-top: 20px;
+  background: #e3f2fd;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.sponsor-balance {
+  font-size: 18px;
+  color: #0d47a1;
+  font-weight: bold;
+}
+
+.sponsor-block {
+  margin: 20px 0;
+  background: #f1f8ff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+  padding: 10px 20px;
+}
+
+.sponsor-block .header {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  gap: 10px;
+}
+
+.sponsor-block .header span {
+  font-size: 20px;
+  transition: transform 0.2s;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 10px 2px 18px 2px;
+  }
+  table {
+    min-width: 900px;
+    overflow-x: auto;
+    display: block;
+  }
+}
+
+@media print {
+  .navbar,
+  .dashboard-controls,
+  button,
+  input[type="text"],
+  input[type="number"] {
+    display: none !important;
+  }
+
+  table {
+    box-shadow: none;
+    border: 1px solid #ccc;
+  }
+} 
