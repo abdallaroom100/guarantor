@@ -34,7 +34,7 @@ app.get("*",(req,res)=>{
 // Routes
 connectDb()
 // connection
-const port = process.env.PORT || 6000;
+const port = process.env.PORT || 7000;
 app.listen(port,"0.0.0.0", () => console.log(`Listening to port ${port}`));
 
 

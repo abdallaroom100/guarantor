@@ -30,11 +30,11 @@ export default defineConfig({
       usePolling: true
     },
      proxy: {
-      '/user': 'http://localhost:6000',
-      '/guarantor': 'http://localhost:6000',
+      '/user': 'http://localhost:7000',
+      '/guarantor': 'http://localhost:7000',
       // لو عندك مسارات تانية أضفها هنا
       // '/api': 'http://localhost:5000'
-      '/admin': 'http://localhost:6000'
+      '/admin': 'http://localhost:7000'
     }
   }
 })
