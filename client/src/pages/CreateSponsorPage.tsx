@@ -96,7 +96,7 @@ const CreateSponsorPage: React.FC = () => {
             <div className="bg-blue-100 p-3 rounded-full ml-4">
               <User className="h-8 w-8 text-blue-600" />
             </div>
-            <h1 className="text-xl md:text-xl md:text-3xl font-bold text-gray-800">إنشاء وكيل وعملاء</h1>
+            <h1 className="text-xl  md:text-3xl font-bold text-gray-800">إنشاء وكيل وعملاء</h1>
           </div>
           <div className="w-full h-1 bg-gradient-to-r from-blue-500 to-indigo-500 mx-auto rounded-full"></div>
           </div>
@@ -109,20 +109,20 @@ const CreateSponsorPage: React.FC = () => {
               <div className="bg-green-100 p-2  ml-3">
                 <User className="h-5 w-5 text-green-600" />
               </div>
-              بيانات الوكيل
+              بيانات الكفيل
             </h2>
             
             <div className="grid md:grid-cols-3 gap-6">
               <div className="relative">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  اسم الوكيل
+                  اسم الكفيل
                 </label>
                 <div className="relative">
                   <User className="absolute right-3 top-3 h-5 w-5 text-gray-400" />
                   <input
                     type="text"
                     name="name"
-                    placeholder="أدخل اسم الوكيل"
+                    placeholder="أدخل اسم الكفيل"
                     value={sponsor.name}
                     onChange={handleSponsorChange}
                     className="w-full pr-10 pl-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 hover:bg-white"
