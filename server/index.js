@@ -7,6 +7,7 @@ import path from "path"
 import userRouter from "./routers/user.router.js"
 import adminRouter from "./routers/admin.router.js"
 import { fileURLToPath } from "url"
+
 // Middlewares
 
 const app = express();
@@ -26,11 +27,10 @@ app.use("/admin",adminRouter)
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 // Ensure __dirname and path are available
-app.use(express.static(path.join(__dirname, '../client/dist')));
-
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../client/dist', 'index.html'));
-});
+app.use(express.static(path.join(__dirname,"../client/dist")))
+app.get("*",(req,res)=>{
+    res.sendFile(path.join(__dirname,"../client/dist/index.html"))
+})
 // Routes
 connectDb()
 // connection
