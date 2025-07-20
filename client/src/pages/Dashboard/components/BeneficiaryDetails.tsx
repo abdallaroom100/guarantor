@@ -100,7 +100,7 @@ const BeneficiaryDetails = ({ beneficiary, onClose }: BeneficiaryDetailsProps) =
                 className={styles.detailsImage}
                 onError={(e) => {
                   e.currentTarget.onerror = null;
-                  e.currentTarget.src = "/img/logo.png";
+                  e.currentTarget.src = "/";
                 }}
                 loading="lazy"
               />
