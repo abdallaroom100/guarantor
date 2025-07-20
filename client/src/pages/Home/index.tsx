@@ -17,7 +17,7 @@ const Home = () => {
   return (
     <>
       <Helmet>
-        <title>جمعية مبرة القعوان الخيرية</title>
+        <title>حقيبة الانقاذ</title>
         <link rel="icon" type="image/png" href="/img/logo.png" />
         <link rel="canonical" href="https://store.elqawan.com/" />
         <meta name="description" content="جمعية مبرة القعوان الخيرية: جمعية خيرية سعودية تهدف إلى دعم الأسر المحتاجة، كفالة الأيتام، وتنمية المجتمع من خلال مشاريع إنسانية وتنموية متنوعة في منطقة القعوان وما حولها." />
