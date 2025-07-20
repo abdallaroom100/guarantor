@@ -95,7 +95,7 @@ const Dashboard = () => {
         {/* Header */}
         <div className="px-6 border-b border-gray-200">
           <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-bold !text-gray-800 !mb-[20px] !mt-[19px]">لوحة التحكم</h2>
+            <h2 className="text-2xl font-bold !text-gray-800 !mb-[20px] !mt-[19px]">لوحة تحكم حقيبة الإنجاز</h2>
             {/* Close button for mobile */}
             <button
               className="lg:hidden p-2 rounded-lg hover:bg-gray-200 transition-colors text-gray-600"
@@ -104,11 +104,20 @@ const Dashboard = () => {
               <X size={20} />
             </button>
           </div>
-        
+          {/* Admin Info Section */}
+           
+            <div className="mt-4 mb-4 p-4 rounded-2xl bg-gradient-to-r from-blue-100 to-emerald-100 text-right shadow border-2 border-blue-300">
+              <div className="text-lg font-bold text-blue-800 mb-1">
+                <span className="text-gray-600 font-bold">الاسم: </span>
+                <span>يوسف القاسمي</span>
+              </div>
+              <div className="text-base font-semibold text-gray-700">
+                <span className="text-gray-600 font-bold">الدور: </span>
+                <span className="text-green-600 font-extrabold">المدير</span>
+              </div>
+            </div>
+          
         </div>
-
-        {/* Admin Info Section */}
-       
 
         {/* Navigation */}
         <nav className="flex-1 p-6 space-y-3 overflow-y-auto max-h-[calc(100vh-200px)]">
