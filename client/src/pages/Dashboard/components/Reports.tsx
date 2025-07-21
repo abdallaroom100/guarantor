@@ -112,6 +112,47 @@ const Reports: React.FC = () => {
     notExists: filteredWorkers.filter(w => getPaymentStatus(w).status === 'not-exists').length
   };
 
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+
+  // Reset page to 1 when filters/search change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, selectedYear, selectedMonth]);
+
+  // Paginated data
+  const paginatedWorkers = filteredWorkers.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+  const pageCount = Math.ceil(filteredWorkers.length / itemsPerPage);
+
+  // Pagination controls
+  const Pagination = () => (
+    <div className="flex justify-center items-center gap-2 mt-6 select-none mb-5">
+      <button
+        onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+        disabled={currentPage === 1}
+        className="px-5 h-10 rounded-full border-2 border-green-500 bg-white text-green-600 font-bold hover:bg-gradient-to-l hover:from-green-100 hover:to-emerald-100 transition disabled:opacity-40 disabled:cursor-not-allowed shadow-sm"
+        aria-label="السابق"
+      >
+        السابق
+      </button>
+      <span className="flex items-center justify-center min-w-[40px] h-10 px-3 rounded-lg border-2 mx-0.5 font-bold shadow-sm bg-gradient-to-l from-green-500 to-emerald-500 text-white border-green-600 scale-110 ">
+        {currentPage}
+      </span>
+      <button
+        onClick={() => setCurrentPage((prev) => Math.min(prev + 1, pageCount))}
+        disabled={currentPage === pageCount || pageCount === 0}
+        className="px-5 h-10 rounded-full border-2 border-green-500 bg-white text-green-600 font-bold hover:bg-gradient-to-l hover:from-green-100 hover:to-emerald-100 transition disabled:opacity-40 disabled:cursor-not-allowed shadow-sm"
+        aria-label="التالي"
+      >
+        التالي
+      </button>
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 pt-8" dir="rtl">
       <div className="max-w-9xl mx-auto px-1 md:px-4">
@@ -247,44 +288,47 @@ const Reports: React.FC = () => {
               </div>
 
               {filteredWorkers.length > 0 ? (
-                <div className="overflow-x-auto">
-                  <table className="min-w-full">
-                    <thead className="bg-gray-50">
-                      <tr>
-                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">اسم العامل</th>
-                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">رقم الجوال</th>
-                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">رقم الإقامة</th>
-                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">اسم الكفيل</th>
-                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">تاريخ الإنشاء</th>
-                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">المبلغ</th>
-                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">حالة الدفع</th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                      {filteredWorkers.map((worker, index) => {
-                        const paymentStatus = getPaymentStatus(worker);
-                        return (
-                          <tr key={worker._id || index} className="hover:bg-gray-50">
-                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{worker.fullName}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{formatPhone(worker.phone)}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{worker.residenceNumber}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{worker.guarantorName || '-'}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                              {worker.createdAt ? formatDate(worker.createdAt) : '-'}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{worker.price} ريال</td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium border ${paymentStatus.color}`}>
-                                {paymentStatus.icon}
-                                {paymentStatus.text}
-                              </span>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
+                <>
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">اسم العامل</th>
+                          <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">رقم الجوال</th>
+                          <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">رقم الإقامة</th>
+                          <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">اسم الكفيل</th>
+                          <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">تاريخ الإنشاء</th>
+                          <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">المبلغ</th>
+                          <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">حالة الدفع</th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {paginatedWorkers.map((worker, index) => {
+                          const paymentStatus = getPaymentStatus(worker);
+                          return (
+                            <tr key={worker._id || index} className="hover:bg-gray-50">
+                              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{worker.fullName}</td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{formatPhone(worker.phone)}</td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{worker.residenceNumber}</td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{worker.guarantorName || '-'}</td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {worker.createdAt ? formatDate(worker.createdAt) : '-'}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{worker.price} ريال</td>
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium border ${paymentStatus.color}`}>
+                                  {paymentStatus.icon}
+                                  {paymentStatus.text}
+                                </span>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                  <Pagination />
+                </>
               ) : (
                 <div className="text-center py-8">
                   <Users className="mx-auto h-12 w-12 text-gray-400" />

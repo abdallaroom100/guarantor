@@ -19,11 +19,14 @@ export const getCurrentUser = async (req, res) => {
 };
 
 export const createGuarantor = async (req, res) => {
-  const { fullName, phone, cardNumber,price, workers } = req.body;
+  const { fullName, phone, cardNumber, price, workers, birthDate } = req.body;
   console.log(req.body)
   try {
-    if (!fullName || !phone || !cardNumber || !workers?.length ) {
-      return res.status(400).json({ error: "برجاء ملئ جميع الحقول المطلوبة " });
+    if (!fullName || !phone || !cardNumber || !workers?.length || !birthDate) {
+      return res.status(400).json({ error: "برجاء ملئ جميع الحقول المطلوبة بما فيها تاريخ الميلاد للكفيل" });
+    }
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(birthDate)) {
+      return res.status(400).json({ error: "صيغة تاريخ الميلاد للكفيل غير صحيحة. يجب أن تكون yyyy-mm-dd" });
     }
     if (fullName.length < 2) {
       return res.status(400).json({ error: "برجاء ادخال بيانات الاسم صحيحة" });
@@ -54,49 +57,46 @@ export const createGuarantor = async (req, res) => {
         !worker?.phone ||
         !worker?.residenceNumber ||
         !worker?.residenceEndDate || 
-        !worker?.price
+        !worker?.price ||
+        !worker?.birthDate
       ) {
         return res
           .status(400)
-          .json({ error: `برجاء ملئ جميع الحقول للعامل رقم ${i + 1}` });
+          .json({ error: `برجاء ملئ جميع الحقول للعامل رقم ${i + 1} بما فيها تاريخ الميلاد` });
       }
-    
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(worker.birthDate)) {
+        return res.status(400).json({ error: `صيغة تاريخ الميلاد للعامل رقم ${i + 1} غير صحيحة. يجب أن تكون yyyy-mm-dd` });
+      }
       if (worker.fullName.length < 2) {
         return res
           .status(400)
           .json({ error: `برجاء ادخال بيانات الاسم صحيحة للعامل رقم ${i + 1}` });
       }
-    
       if (String(worker.phone).length != 9) {
         return res
           .status(400)
           .json({ error: `برجاء ادخال رقم هاتف مكون من 9 ارقام للعامل رقم ${i + 1}` });
       }
-    
       if (String(worker.residenceNumber)?.length != 10) {
         return res 
           .status(400)
           .json({ error: `برجاء ادخال رقم إقامة مكون من 10 أرقام للعامل رقم ${i + 1}` });
       }
-    
       if (!/^\d{4}-\d{2}-\d{2}$/.test(worker?.residenceEndDate)) {
         return res
           .status(400)
           .json({ error: `برجاء ادخال تاريخ انتهاء صالح للعامل رقم ${i + 1}` });
       }
-    
       // ✅ التحقق من عدم تكرار رقم الإقامة في قاعدة البيانات
       const existingWorker = await User.findOne({
         "workers.residenceNumber": worker.residenceNumber,
       });
-    
       if (existingWorker) {
         return res.status(400).json({
           error: `رقم الإقامة للعامل رقم ${i + 1} مسجل بالفعل`,
         });
       }
     }
-    
     const user = await User.findOne({ cardNumber });
     if (user)
       return res.status(400).json({ error: "بيانات الكفيل هذه مسجله بالفعل" });
@@ -106,7 +106,8 @@ export const createGuarantor = async (req, res) => {
       phone,
       workers,
       cardNumber,
-      price
+      price,
+      birthDate
     });
     // generateToken(newUser._id, res,req);
     res.status(200).json(newUser);
@@ -120,21 +121,31 @@ export const createGuarantor = async (req, res) => {
 
 export const updateGuarantor = async (req, res) => {
   const { cardNumber } = req.params;
-  const { fullName, phone, workers } = req.body;
+  const { fullName, phone, workers, birthDate } = req.body;
 
   try {
+    if (!fullName || !phone || !cardNumber || !workers?.length || !birthDate) {
+      return res.status(400).json({ error: "برجاء ملئ جميع الحقول المطلوبة بما فيها تاريخ الميلاد للكفيل" });
+    }
     const guarantor = await User.findOne({ cardNumber });
 
     if (!guarantor) {
       return res.status(404).json({ error: "لم يتم العثور على الكفيل" });
     }
 
-    // ✅ تحديث بيانات الكفيل
+
     if (fullName) {
       if (fullName.length < 2) {
         return res.status(400).json({ error: "برجاء إدخال اسم صحيح للكفيل" });
       }
       guarantor.fullName = fullName;
+    }
+
+    if (birthDate) {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(birthDate)) {
+        return res.status(400).json({ error: "صيغة تاريخ الميلاد للكفيل غير صحيحة. يجب أن تكون yyyy-mm-dd" });
+      }
+      guarantor.birthDate = birthDate;
     }
 
     if (phone) {
@@ -144,7 +155,7 @@ export const updateGuarantor = async (req, res) => {
       guarantor.phone = phone;
     }
 
-    // ✅ تحديث العمال
+
     if (workers) {
       if (!Array.isArray(workers)) {
         return res.status(400).json({ error: "العمال يجب أن يكونوا في جدول (Array)" });
@@ -158,11 +169,16 @@ export const updateGuarantor = async (req, res) => {
           !worker.fullName ||
           !worker.phone ||
           !worker.residenceNumber ||
-          !worker.residenceEndDate
+          !worker.residenceEndDate ||
+          !worker.birthDate
         ) {
           return res.status(400).json({
-            error: `برجاء ملئ جميع الحقول الأساسية للعامل رقم ${i + 1}`
+            error: `برجاء ملئ جميع الحقول الأساسية للعامل رقم ${i + 1} بما فيها تاريخ الميلاد`
           });
+        }
+
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(worker.birthDate)) {
+          return res.status(400).json({ error: `صيغة تاريخ الميلاد للعامل رقم ${i + 1} غير صحيحة. يجب أن تكون yyyy-mm-dd` });
         }
 
         if (worker.fullName.length < 2) {
@@ -181,17 +197,17 @@ export const updateGuarantor = async (req, res) => {
           return res.status(400).json({ error: `تاريخ انتهاء الإقامة غير صالح للعامل رقم ${i + 1}` });
         }
 
-        // ✅ التحقق من السعر (اختياري)
+   
         if (worker.price !== undefined && typeof worker.price !== "number") {
           return res.status(400).json({ error: `السعر يجب أن يكون رقمًا للعامل رقم ${i + 1}` });
         }
 
-        // ✅ التحقق من الملاحظات (اختياري)
+        
         if (worker.notice !== undefined && typeof worker.notice !== "string") {
           return res.status(400).json({ error: `الملاحظة يجب أن تكون نصًا للعامل رقم ${i + 1}` });
         }
 
-        // ✅ التحقق من paysHistory كـ object
+  
         if (worker.paysHistory !== undefined) {
           if (
             typeof worker.paysHistory !== "object" ||
@@ -233,7 +249,8 @@ export const updateGuarantor = async (req, res) => {
       guarantor.workers = workers;
     }
 
-    await guarantor.save();
+    console.log(req.body)
+    await guarantor.save(); 
     return res.status(200).json(guarantor);
 
   } catch (error) {

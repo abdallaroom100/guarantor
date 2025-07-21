@@ -14,10 +14,25 @@ interface Worker {
   price: number;
   notice?: string;
   paysHistory?: Record<string, number[]>;
-  // حقول تاريخ انتهاء الإقامة المنفصلة
   expiryYear?: string;
   expiryMonth?: string;
   expiryDay?: string;
+  birthDate?: string;
+  birthYear?: string;
+  birthMonth?: string;
+  birthDay?: string;
+}
+
+interface Guarantor {
+  _id: string;
+  fullName: string;
+  phone: number;
+  cardNumber: number;
+  birthDate?: string;
+  birthYear?: string;
+  birthMonth?: string;
+  birthDay?: string;
+  workers: Worker[];
 }
 
 const EditGuarantorPage: React.FC = () => {
@@ -26,47 +41,73 @@ const EditGuarantorPage: React.FC = () => {
   const { loading, error, guarantor, refetch } = useGetGuarantor(cardNumber || '');
   const { updateGuarantor, loading: updateLoading, error: updateError } = useUpdateGuarantor();
 
+  // تحديث حالة الكفيل لتشمل تاريخ الميلاد
   const [formData, setFormData] = useState({
     fullName: '',
     phone: '',
     cardNumber: '',
+    birthYear: '',
+    birthMonth: '',
+    birthDay: '',
     workers: [] as Worker[]
   });
 
   const [editingWorker, setEditingWorker] = useState<number | null>(null);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear().toString());
   const [selectedMonth, setSelectedMonth] = useState((new Date().getMonth() + 1).toString().padStart(2, '0'));
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+  const totalPages = Math.ceil(formData.workers.length / itemsPerPage);
+  const paginatedWorkers = formData.workers.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   useEffect(() => {
     if (guarantor) {
-      // تحويل تاريخ انتهاء الإقامة إلى حقول منفصلة
+      // تحويل تاريخ انتهاء الإقامة وتاريخ الميلاد إلى حقول منفصلة
       const workersWithExpiryFields = guarantor.workers?.map(worker => {
         let expiryYear = '', expiryMonth = '', expiryDay = '';
+        let birthYear = '', birthMonth = '', birthDay = '';
         if (worker.residenceEndDate) {
           const date = new Date(worker.residenceEndDate);
           expiryYear = date.getFullYear().toString();
           expiryMonth = (date.getMonth() + 1).toString().padStart(2, '0');
           expiryDay = date.getDate().toString().padStart(2, '0');
         }
-        
+        if (worker.birthDate) {
+          const [y, m, d] = worker.birthDate.split('-');
+          birthYear = y || '';
+          birthMonth = m || '';
+          birthDay = d || '';
+        }
         return {
           ...worker,
           expiryYear,
           expiryMonth,
-          expiryDay
+          expiryDay,
+          birthYear,
+          birthMonth,
+          birthDay
         };
       }) || [];
-
+      let birthYear = '', birthMonth = '', birthDay = '';
+      if (guarantor.birthDate) {
+        const [y, m, d] = guarantor.birthDate.split('-');
+        birthYear = y || '';
+        birthMonth = m || '';
+        birthDay = d || '';
+      }
       setFormData({
         fullName: guarantor.fullName || '',
         phone: guarantor.phone?.toString() || '',
         cardNumber: guarantor.cardNumber?.toString() || '',
+        birthYear,
+        birthMonth,
+        birthDay,
         workers: workersWithExpiryFields
       });
     }
   }, [guarantor]);
 
-  const handleGuarantorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleGuarantorChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
@@ -102,7 +143,10 @@ const EditGuarantorPage: React.FC = () => {
         paysHistory: {},
         expiryYear: '',
         expiryMonth: '',
-        expiryDay: ''
+        expiryDay: '',
+        birthYear: '',
+        birthMonth: '',
+        birthDay: ''
       };
       setFormData({
         ...formData,
@@ -171,17 +215,23 @@ const EditGuarantorPage: React.FC = () => {
         fullName: formData.fullName,
         phone: parseInt(formData.phone) || 0,
         cardNumber: parseInt(formData.cardNumber) || 0,
+        birthDate: formData.birthYear && formData.birthMonth && formData.birthDay
+          ? `${formData.birthYear}-${formData.birthMonth.padStart(2, '0')}-${formData.birthDay.padStart(2, '0')}`
+          : '',
         workers: formData.workers.map(worker => {
-          // تجميع تاريخ انتهاء الإقامة من الحقول المنفصلة
+          // تجميع تاريخ انتهاء الإقامة وتاريخ الميلاد من الحقول المنفصلة
           const residenceEndDate = worker.expiryYear && worker.expiryMonth && worker.expiryDay 
             ? `${worker.expiryYear}-${worker.expiryMonth}-${worker.expiryDay}`
             : worker.residenceEndDate;
-
+          const birthDate = worker.birthYear && worker.birthMonth && worker.birthDay
+            ? `${worker.birthYear}-${worker.birthMonth.padStart(2, '0')}-${worker.birthDay.padStart(2, '0')}`
+            : '';
           return {
             fullName: worker.fullName,
             phone: worker.phone,
             residenceNumber: worker.residenceNumber,
             residenceEndDate,
+            birthDate,
             price: typeof worker.price === 'string' && worker.price === '' ? 0 : worker.price,
             notice: worker.notice || '',
             paysHistory: worker.paysHistory || {}
@@ -227,6 +277,8 @@ const EditGuarantorPage: React.FC = () => {
       </div>
     );
   }
+
+  const arabicMonths = ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 pt-8" dir="rtl">
@@ -313,12 +365,35 @@ const EditGuarantorPage: React.FC = () => {
                   />
                 </div>
               </div>
+              <div className="relative">
+                <label className="block text-sm font-medium text-gray-700 mb-2">تاريخ الميلاد</label>
+                <div className="flex gap-2">
+                  <select name="birthYear" value={formData.birthYear} onChange={handleGuarantorChange} className="w-1/3 px-2 py-2 border border-gray-300 rounded-md text-sm">
+                    <option value="">السنة</option>
+                    {Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - i).map(year => (
+                      <option key={year} value={year}>{year}</option>
+                    ))}
+                  </select>
+                  <select name="birthMonth" value={formData.birthMonth} onChange={handleGuarantorChange} className="w-1/3 px-2 py-2 border border-gray-300 rounded-md text-sm">
+                    <option value="">الشهر</option>
+                    {Array.from({ length: 12 }, (_, i) => i + 1).map(month => (
+                      <option key={month} value={month.toString().padStart(2, '0')}>{month}</option>
+                    ))}
+                  </select>
+                  <select name="birthDay" value={formData.birthDay} onChange={handleGuarantorChange} className="w-1/3 px-2 py-2 border border-gray-300 rounded-md text-sm">
+                    <option value="">اليوم</option>
+                    {Array.from({ length: 31 }, (_, i) => i + 1).map(day => (
+                      <option key={day} value={day.toString().padStart(2, '0')}>{day}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
             </div>
           </div>
 
           {/* Workers Section */}
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200 mb-6">
-            <div className="flex items-center justify-between mb-6">
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl px-0 md:px-6 p-6 border border-blue-200 mb-6 ">
+            <div className="flex items-center justify-between mb-6 md:flex-row flex-col">
               <h2 className="text-xl font-semibold text-gray-800 flex items-center">
                 <div className="bg-blue-100 p-2 rounded-lg ml-3">
                   <Users className="h-5 w-5 text-blue-600" />
@@ -341,9 +416,9 @@ const EditGuarantorPage: React.FC = () => {
               </button>
             </div>
 
-            {formData.workers.length > 0 ? (
+            {paginatedWorkers.length > 0 ? (
               <div className="space-y-4">
-                {formData.workers.map((worker, index) => (
+                {paginatedWorkers.map((worker, index) => (
                   <div key={worker._id || index} className="bg-white rounded-lg p-4 border border-gray-200 relative">
                     {/* زر حذف العامل */}
                     <button
@@ -355,7 +430,7 @@ const EditGuarantorPage: React.FC = () => {
                       <Trash2 className="h-4 w-4" />
                     </button>
 
-                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="grid md:grid-cols-2 mt-2 lg:grid-cols-4 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">اسم العامل</label>
                         <input
@@ -434,12 +509,52 @@ const EditGuarantorPage: React.FC = () => {
                       </div>
                     </div>
 
+                    {/* تاريخ الميلاد */}
+                    <div className="mt-4">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">تاريخ الميلاد</label>
+                      <div className="w-full flex flex-col gap-1 md:flex-row md:gap-1 items-center overflow-y-auto">
+                        <select
+                          name="birthYear"
+                          value={worker.birthYear || ''}
+                          onChange={e => handleWorkerChange(index, 'birthYear', e.target.value)}
+                          className="w-full md:w-fit px-1 py-2 border border-gray-300 rounded-md text-sm min-w-[60px]"
+                        >
+                          <option value="">السنة</option>
+                          {Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - i).map(year => (
+                            <option key={year} value={year}>{year}</option>
+                          ))}
+                        </select>
+                        <select
+                          name="birthMonth"
+                          value={worker.birthMonth || ''}
+                          onChange={e => handleWorkerChange(index, 'birthMonth', e.target.value)}
+                          className="w-full md:w-fit px-1 py-2 border border-gray-300 rounded-md text-sm min-w-[60px]"
+                        >
+                          <option value="">الشهر</option>
+                          {Array.from({ length: 12 }, (_, i) => i + 1).map(month => (
+                            <option key={month} value={month.toString().padStart(2, '0')}>{month}</option>
+                          ))}
+                        </select>
+                        <select
+                          name="birthDay"
+                          value={worker.birthDay || ''}
+                          onChange={e => handleWorkerChange(index, 'birthDay', e.target.value)}
+                          className="w-full md:w-fit px-1 py-2 border border-gray-300 rounded-md text-sm min-w-[60px]"
+                        >
+                          <option value="">اليوم</option>
+                          {Array.from({ length: 31 }, (_, i) => i + 1).map(day => (
+                            <option key={day} value={day.toString().padStart(2, '0')}>{day}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+
                     {/* نظام المدفوعات */}
                     <div className="mt-6">
                       <label className="block text-sm font-medium text-gray-700 mb-3">حالة المدفوعات</label>
                       
                       {/* اختيار السنة والشهر */}
-                      <div className="flex gap-4 mb-4">
+                      <div className="flex justify-between md:justify-start md:gap-4 mb-4">
                         <div>
                           <label className="block text-xs text-gray-500 mb-1">السنة</label>
                           <select
@@ -468,7 +583,7 @@ const EditGuarantorPage: React.FC = () => {
                           <button
                             type="button"
                             onClick={() => handlePaymentStatusChange(index, selectedYear, parseInt(selectedMonth), !isMonthPaid(worker, selectedYear, parseInt(selectedMonth)))}
-                            className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
+                            className={`px-4 py-2 rounded-md text-[12px] font-medium transition-all duration-200 ${
                               isMonthPaid(worker, selectedYear, parseInt(selectedMonth))
                                 ? 'bg-red-100 text-red-700 hover:bg-red-200'
                                 : 'bg-green-100 text-green-700 hover:bg-green-200'
@@ -485,10 +600,14 @@ const EditGuarantorPage: React.FC = () => {
                         {Object.keys(worker.paysHistory || {}).length > 0 ? (
                           <div className="space-y-2">
                             {Object.entries(worker.paysHistory || {}).map(([year, months]) => (
-                              <div key={year} className="text-sm">
-                                <span className="font-medium text-gray-700">{year}:</span>
-                                <span className="text-gray-600 mr-2">
-                                  {months.sort((a, b) => a - b).map(month => month.toString().padStart(2, '0')).join(', ')}
+                              <div key={year} className="text-sm mb-1">
+                                <span className="font-medium text-gray-700 mr-2">{year}:</span>
+                                <span className="flex flex-wrap gap-1">
+                                  {months.sort((a, b) => a - b).map(month => (
+                                    <span key={month} className="inline-block bg-blue-100 text-blue-700 rounded-full px-2 py-0.5 text-xs font-semibold border border-blue-200">
+                                      {arabicMonths[Number(month) - 1]}
+                                    </span>
+                                  ))}
                                 </span>
                               </div>
                             ))}
@@ -497,6 +616,18 @@ const EditGuarantorPage: React.FC = () => {
                           <p className="text-sm text-gray-500">لا توجد مدفوعات مسجلة</p>
                         )}
                       </div>
+                    </div>
+
+                    {/* الملاحظة */}
+                    <div className="mt-3">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">الملاحظة</label>
+                      <input
+                        type="text"
+                        value={worker.notice || ''}
+                        onChange={e => handleWorkerChange(index, 'notice', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="أدخل ملاحظة للعامل (اختياري)"
+                      />
                     </div>
                   </div>
                 ))}
@@ -507,6 +638,35 @@ const EditGuarantorPage: React.FC = () => {
               </div>
             )}
           </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex justify-center gap-2 mt-6">
+              <button
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className="px-3 py-1 rounded bg-gray-200 text-gray-700 hover:bg-gray-300 disabled:opacity-50"
+              >
+                السابق
+              </button>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                <button
+                  key={page}
+                  onClick={() => setCurrentPage(page)}
+                  className={`px-3 py-1 rounded ${currentPage === page ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-blue-100'}`}
+                >
+                  {page}
+                </button>
+              ))}
+              <button
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+                className="px-3 py-1 rounded bg-gray-200 text-gray-700 hover:bg-gray-300 disabled:opacity-50"
+              >
+                التالي
+              </button>
+            </div>
+          )}
 
           {/* Submit Button */}
           <div className="flex justify-center">

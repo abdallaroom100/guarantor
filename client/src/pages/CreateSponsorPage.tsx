@@ -10,20 +10,24 @@ interface Employee {
   expiryYear: string;
   expiryMonth: string;
   expiryDay: string;
+  birthYear: string;
+  birthMonth: string;
+  birthDay: string;
 }
 
 const CreateSponsorPage: React.FC = () => {
   const { createGuarantor, loading, error, isCreated } = useCreateGuarantor();
-  const [sponsor, setSponsor] = useState({ name: '', phone: '', id: '' });
+  // تحديث حالة الكفيل لتشمل تاريخ الميلاد
+  const [sponsor, setSponsor] = useState({ name: '', phone: '', id: '', birthYear: '', birthMonth: '', birthDay: '' });
   const [employees, setEmployees] = useState<Employee[]>([
-    { name: '', phone: '', residency: '', amount: '', expiryYear: '', expiryMonth: '', expiryDay: '' },
+    { name: '', phone: '', residency: '', amount: '', expiryYear: '', expiryMonth: '', expiryDay: '', birthYear: '', birthMonth: '', birthDay: '' },
 
   ]);
 
   // دالة لتفريغ جميع الحقول
   const resetForm = () => {
-    setSponsor({ name: '', phone: '', id: '' });
-    setEmployees([{ name: '', phone: '', residency: '', amount: '', expiryYear: '', expiryMonth: '', expiryDay: '' }]);
+    setSponsor({ name: '', phone: '', id: '', birthYear: '', birthMonth: '', birthDay: '' });
+    setEmployees([{ name: '', phone: '', residency: '', amount: '', expiryYear: '', expiryMonth: '', expiryDay: '', birthYear: '', birthMonth: '', birthDay: '' }]);
   };
 
   // مراقبة حالة النجاح وتفريغ النموذج
@@ -33,7 +37,7 @@ const CreateSponsorPage: React.FC = () => {
     }
   }, [isCreated]);
 
-  const handleSponsorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSponsorChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setSponsor({ ...sponsor, [e.target.name]: e.target.value });
   };
 
@@ -45,7 +49,7 @@ const CreateSponsorPage: React.FC = () => {
 
   const addEmployee = () => {
     if (employees.length < 4) {
-      setEmployees([...employees, { name: '', phone: '', residency: '', amount: '', expiryYear: '', expiryMonth: '', expiryDay: '' }]);
+      setEmployees([...employees, { name: '', phone: '', residency: '', amount: '', expiryYear: '', expiryMonth: '', expiryDay: '', birthYear: '', birthMonth: '', birthDay: '' }]);
     }
   };
 
@@ -55,13 +59,16 @@ const CreateSponsorPage: React.FC = () => {
 
   const handleSubmit = async () => {
     try {
-      // تحويل تواريخ انتهاء الإقامة لصيغة YYYY-MM-DD
+      // تحويل تواريخ انتهاء الإقامة وتواريخ الميلاد
       const employeesWithFormattedDates = employees.map(emp => ({
         fullName: emp.name,
         phone: parseInt(emp.phone) || 0,
         residenceNumber: parseInt(emp.residency) || 0,
         residenceEndDate: emp.expiryYear && emp.expiryMonth && emp.expiryDay 
           ? `${emp.expiryYear}-${emp.expiryMonth.padStart(2, '0')}-${emp.expiryDay.padStart(2, '0')}`
+          : '',
+        birthDate: emp.birthYear && emp.birthMonth && emp.birthDay
+          ? `${emp.birthYear}-${emp.birthMonth.padStart(2, '0')}-${emp.birthDay.padStart(2, '0')}`
           : '',
         price: parseInt(emp.amount) || 0
       }));
@@ -71,6 +78,9 @@ const CreateSponsorPage: React.FC = () => {
         fullName: sponsor.name,
         phone: parseInt(sponsor.phone) || 0,
         cardNumber: parseInt(sponsor.id) || 0,
+        birthDate: sponsor.birthYear && sponsor.birthMonth && sponsor.birthDay
+          ? `${sponsor.birthYear}-${sponsor.birthMonth.padStart(2, '0')}-${sponsor.birthDay.padStart(2, '0')}`
+          : '',
         workers: employeesWithFormattedDates
       };
       
@@ -89,7 +99,7 @@ const CreateSponsorPage: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 pt-12 md:pt-8" dir="rtl">
       <div className="max-w-9xl mx-auto">
         {/* Header */}
-        <div className="bg-white rounded-t-[10px]  shadow-lg p-8 pb-0 ">
+        <div className="bg-gradient-to-r from-blue-50 to-emerald-50 rounded-t-2xl  shadow-2xl p-8 pb-0 ">
           <div className=' w-fit mx-auto'>
           <div className="flex items-center justify-center mb-2 w-fit mx-auto">
           
@@ -104,11 +114,9 @@ const CreateSponsorPage: React.FC = () => {
 
         <div className="space-y-8">
           {/* Sponsor Information Section */}
-          <div className="bg-white shadow-lg p-8 mb-0 pb-0">
-            <h2 className="text-xl font-semibold text-gray-800 mb-6 flex items-center">
-              <div className="bg-green-100 p-2  ml-3">
-                <User className="h-5 w-5 text-green-600" />
-              </div>
+          <div className="bg-gradient-to-r from-blue-50 to-emerald-50 shadow-lg   border-blue-200 p-8 mb-0">
+            <h2 className="text-xl font-bold text-blue-700 mb-6 flex items-center gap-2">
+              <User className="h-6 w-6 text-blue-500" />
               بيانات الكفيل
             </h2>
             
@@ -166,11 +174,65 @@ const CreateSponsorPage: React.FC = () => {
                   />
                 </div>
               </div>
+              {/* في قسم بيانات الكفيل أضف حقول تاريخ الميلاد */}
+              <div className="relative">
+                <label className="block text-sm font-medium text-gray-700 mb-2">تاريخ الميلاد</label>
+                <div className="flex gap-2">
+                  <div className="relative w-full md:w-fit mb-2">
+                    <select
+                      name="birthYear"
+                      value={sponsor.birthYear}
+                      onChange={handleSponsorChange}
+                      className="bg-white shadow-sm rounded-lg border-2 border-blue-200 focus:border-blue-500 px-2 py-2 pr-12 text-sm appearance-none transition-all duration-200 hover:border-blue-400"
+                    >
+                      <option value="">السنة</option>
+                      {Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - i).map(year => (
+                        <option key={year} value={year}>{year}</option>
+                      ))}
+                    </select>
+                    <span className="pointer-events-none absolute right-3 top-1/2 transform -translate-y-1/2 text-blue-400">
+                      <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" /></svg>
+                    </span>
+                  </div>
+                  <div className="relative w-full md:w-fit mb-2">
+                    <select
+                      name="birthMonth"
+                      value={sponsor.birthMonth}
+                      onChange={handleSponsorChange}
+                      className="bg-white shadow-sm rounded-lg border-2 border-blue-200 focus:border-blue-500 px-2 py-2 pr-12 text-sm appearance-none transition-all duration-200 hover:border-blue-400"
+                    >
+                      <option value="">الشهر</option>
+                      {Array.from({ length: 12 }, (_, i) => i + 1).map(month => (
+                        <option key={month} value={month.toString().padStart(2, '0')}>{month}</option>
+                      ))}
+                    </select>
+                    <span className="pointer-events-none absolute right-3 top-1/2 transform -translate-y-1/2 text-blue-400">
+                      <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" /></svg>
+                    </span>
+                  </div>
+                  <div className="relative w-full md:w-fit mb-2">
+                    <select
+                      name="birthDay"
+                      value={sponsor.birthDay}
+                      onChange={handleSponsorChange}
+                      className="bg-white shadow-sm rounded-lg border-2 border-blue-200 focus:border-blue-500 px-2 py-2 pr-12 text-sm appearance-none transition-all duration-200 hover:border-blue-400"
+                    >
+                      <option value="">اليوم</option>
+                      {Array.from({ length: 31 }, (_, i) => i + 1).map(day => (
+                        <option key={day} value={day.toString().padStart(2, '0')}>{day}</option>
+                      ))}
+                    </select>
+                    <span className="pointer-events-none absolute right-3 top-1/2 transform -translate-y-1/2 text-blue-400">
+                      <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" /></svg>
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
           {/* Employees Section */}
-          <div className="bg-white rounded-b-xl shadow-lg p-5 md:p-8">
+          <div className="bg-gradient-to-r from-blue-50 to-emerald-50 shadow-lg rounded-b-2xl   p-8">
             <div className="flex items-center justify-between mb-6 md:flex-row flex-col">
               <h2 className="text-xl font-semibold text-gray-800 flex items-center">
                 <div className="bg-purple-100 p-2 rounded-lg ml-3">
@@ -193,132 +255,191 @@ const CreateSponsorPage: React.FC = () => {
                 إضافة عميل جديد
               </button>
             </div>
- 
-            <div className="overflow-x-auto">
-              <div className="min-w-fit">
-                {/* Table Header */}
-                <div className="hidden md:!grid grid-cols-5 gap-4 bg-gray-50 p-4 rounded-t-lg border-b-2 border-gray-200 !w-full">
-                  <div className="font-semibold text-gray-700 text-center">الاسم</div>
-                  <div className="font-semibold text-gray-700 text-center">رقم الجوال</div>
-                  <div className="font-semibold text-gray-700 text-center">رقم الإقامة</div>
-                  <div className="font-semibold text-gray-700 text-center">المبلغ المستحق</div>
-                  <div className="font-semibold text-gray-700 text-center">تاريخ انتهاء الإقامة</div>
-                </div>
 
-                {/* Table Body */}
-                <div className="space-y-2 ">
-                  {employees.map((emp, idx) => (
-                    <div
-                      key={idx}
-                      className="grid grid-cols-1 md:grid-cols-5 gap-3 p-3  relative bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors duration-200"
-                    >
-                          {/* زر حذف العامل - للديسكتوب فقط */}
-    <button
-      type="button"
-      onClick={() => handleRemoveEmployee(idx)}
-      className="absolute top-1/4 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-1.5 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-110 z-10 hidden md:!block"
-      title="حذف العامل"
-    >
-      <X className="h-4 w-4" />
-    </button>
-                      <div className="md:pr-8">
-                        <label className="block md:hidden text-xs text-gray-500 mb-1">الاسم</label>
+            <div className="space-y-6">
+              {employees.map((emp, idx) => (
+                <div key={idx} className="relative bg-gray-50 rounded-lg p-4 border border-gray-200 shadow-sm">
+                  {/* زر حذف العامل */}
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveEmployee(idx)}
+                    className="absolute top-2 left-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-1.5 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-110 z-10"
+                    title="حذف العامل"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                  <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mt-3">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">اسم العامل</label>
+                      <div className="relative">
+                        <User className="absolute right-3 top-3 h-5 w-5 text-gray-400" />
                         <input
                           type="text"
                           name="name"
                           placeholder="اسم العامل"
                           value={emp.name}
                           onChange={e => handleEmployeeChange(idx, e)}
-                          className="w-full px-2 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
+                          className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition-all duration-200 bg-white text-base placeholder-gray-400 pr-10"
                         />
                       </div>
-                      <div>
-                        <label className="block md:hidden text-xs text-gray-500 mb-1">رقم الجوال</label>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">رقم الجوال</label>
+                      <div className="relative">
+                        <Phone className="absolute right-3 top-3 h-5 w-5 text-gray-400" />
                         <input
                           type="text"
                           name="phone"
                           placeholder="رقم الجوال"
                           value={emp.phone}
                           onChange={e => handleEmployeeChange(idx, e)}
-                          className="w-full px-2 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
+                          className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition-all duration-200 bg-white text-base placeholder-gray-400 pr-10"
                         />
                       </div>
-                      <div>
-                        <label className="block md:hidden text-xs text-gray-500 mb-1">رقم الإقامة</label>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">رقم الإقامة</label>
+                      <div className="relative">
+                        <CreditCard className="absolute right-3 top-3 h-5 w-5 text-gray-400" />
                         <input
                           type="text"
                           name="residency"
                           placeholder="رقم الإقامة"
                           value={emp.residency}
                           onChange={e => handleEmployeeChange(idx, e)}
-                          className="w-full px-2 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
+                          className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition-all duration-200 bg-white text-base placeholder-gray-400 pr-10"
                         />
                       </div>
-                      <div>
-                        <label className="block md:hidden text-xs text-gray-500 mb-1">المبلغ المستحق</label>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">المبلغ المستحق</label>
+                      <div className="relative">
+                        <FileText className="absolute right-3 top-3 h-5 w-5 text-gray-400" />
                         <input
                           type="number"
                           name="amount"
                           placeholder="المبلغ المستحق"
                           value={emp.amount}
                           onChange={e => handleEmployeeChange(idx, e)}
-                          className="w-full px-2 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
+                          className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition-all duration-200 bg-white text-base placeholder-gray-400 pr-10"
                           min="0"
                         />
                       </div>
-                      {/* تاريخ انتهاء الإقامة */}
-                      <div>
-                        <label className="block md:hidden text-xs text-gray-500 mb-1">تاريخ انتهاء الإقامة</label>
-                        <div className="w-full flex flex-col gap-1 md:flex-row md:gap-1 items-center overflow-y-auto">
+                    </div>
+                  </div>
+                  {/* تاريخ الميلاد وتاريخ انتهاء الإقامة جنب بعض */}
+                  <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* تاريخ الميلاد */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">تاريخ الميلاد</label>
+                      <div className="w-full flex flex-col gap-1 md:flex-row md:gap-1 items-center overflow-y-auto">
+                        <div className="relative w-full md:w-fit mb-2">
                           <select
-                            name="expiryYear"
-                            value={emp.expiryYear}
+                            name="birthYear"
+                            value={emp.birthYear}
                             onChange={e => handleEmployeeChange(idx, e)}
-                            className="w-full md:w-fit px-1 py-2 border border-gray-300 rounded-md text-sm min-w-[60px]"
+                            className="bg-white shadow-sm rounded-lg border-2 border-blue-200 focus:border-blue-500 px-2 py-2 pr-12 text-sm appearance-none transition-all duration-200 hover:border-blue-400"
                           >
                             <option value="">السنة</option>
-                            {Array.from({ length: 15 }, (_, i) => new Date().getFullYear() + i).map(year => (
+                            {Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - i).map(year => (
                               <option key={year} value={year}>{year}</option>
                             ))}
                           </select>
+                          <span className="pointer-events-none absolute right-3 top-1/2 transform -translate-y-1/2 text-blue-400">
+                            <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" /></svg>
+                          </span>
+                        </div>
+                        <div className="relative w-full md:w-fit mb-2">
                           <select
-                            name="expiryMonth"
-                            value={emp.expiryMonth}
+                            name="birthMonth"
+                            value={emp.birthMonth}
                             onChange={e => handleEmployeeChange(idx, e)}
-                            className="w-full md:w-fit px-1 py-2 border border-gray-300 rounded-md text-sm min-w-[60px]"
+                            className="bg-white shadow-sm rounded-lg border-2 border-blue-200 focus:border-blue-500 px-2 py-2 pr-12 text-sm appearance-none transition-all duration-200 hover:border-blue-400"
                           >
                             <option value="">الشهر</option>
                             {Array.from({ length: 12 }, (_, i) => i + 1).map(month => (
                               <option key={month} value={month.toString().padStart(2, '0')}>{month}</option>
                             ))}
                           </select>
+                          <span className="pointer-events-none absolute right-3 top-1/2 transform -translate-y-1/2 text-blue-400">
+                            <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" /></svg>
+                          </span>
+                        </div>
+                        <div className="relative w-full md:w-fit mb-2">
                           <select
-                            name="expiryDay"
-                            value={emp.expiryDay}
+                            name="birthDay"
+                            value={emp.birthDay}
                             onChange={e => handleEmployeeChange(idx, e)}
-                            className="w-full md:w-fit px-1 py-2 border border-gray-300 rounded-md text-sm min-w-[60px]"
+                            className="bg-white shadow-sm rounded-lg border-2 border-blue-200 focus:border-blue-500 px-2 py-2 pr-12 text-sm appearance-none transition-all duration-200 hover:border-blue-400"
                           >
                             <option value="">اليوم</option>
                             {Array.from({ length: 31 }, (_, i) => i + 1).map(day => (
                               <option key={day} value={day.toString().padStart(2, '0')}>{day}</option>
                             ))}
-                                  </select>
-      </div>
-    </div>
-    {/* زر حذف العامل - للموبايل فقط */}
-    <div className="col-span-1 md:hidden mt-3">
-      <button
-        type="button"
-        onClick={() => handleRemoveEmployee(idx)}
-        className="w-full bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
-      >
-        حذف العميل
-      </button>
-    </div>
-  </div>
-))}
+                          </select>
+                          <span className="pointer-events-none absolute right-3 top-1/2 transform -translate-y-1/2 text-blue-400">
+                            <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" /></svg>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    {/* تاريخ انتهاء الإقامة */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">تاريخ انتهاء الإقامة</label>
+                      <div className="w-full flex flex-col gap-1 md:flex-row md:gap-1 items-center overflow-y-auto">
+                        <div className="relative w-full md:w-fit mb-2">
+                          <select
+                            name="expiryYear"
+                            value={emp.expiryYear}
+                            onChange={e => handleEmployeeChange(idx, e)}
+                            className="bg-white shadow-sm rounded-lg border-2 border-blue-200 focus:border-blue-500 px-2 py-2 pr-12 text-sm appearance-none transition-all duration-200 hover:border-blue-400"
+                          >
+                            <option value="">السنة</option>
+                            {Array.from({ length: 15 }, (_, i) => new Date().getFullYear() + i).map(year => (
+                              <option key={year} value={year}>{year}</option>
+                            ))}
+                          </select>
+                          <span className="pointer-events-none absolute right-3 top-1/2 transform -translate-y-1/2 text-blue-400">
+                            <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" /></svg>
+                          </span>
+                        </div>
+                        <div className="relative w-full md:w-fit mb-2">
+                          <select
+                            name="expiryMonth"
+                            value={emp.expiryMonth}
+                            onChange={e => handleEmployeeChange(idx, e)}
+                            className="bg-white shadow-sm rounded-lg border-2 border-blue-200 focus:border-blue-500 px-2 py-2 pr-12 text-sm appearance-none transition-all duration-200 hover:border-blue-400"
+                          >
+                            <option value="">الشهر</option>
+                            {Array.from({ length: 12 }, (_, i) => i + 1).map(month => (
+                              <option key={month} value={month.toString().padStart(2, '0')}>{month}</option>
+                            ))}
+                          </select>
+                          <span className="pointer-events-none absolute right-3 top-1/2 transform -translate-y-1/2 text-blue-400">
+                            <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" /></svg>
+                          </span>
+                        </div>
+                        <div className="relative w-full md:w-fit mb-2">
+                          <select
+                            name="expiryDay"
+                            value={emp.expiryDay}
+                            onChange={e => handleEmployeeChange(idx, e)}
+                            className="bg-white shadow-sm rounded-lg border-2 border-blue-200 focus:border-blue-500 px-2 py-2 pr-12 text-sm appearance-none transition-all duration-200 hover:border-blue-400"
+                          >
+                            <option value="">اليوم</option>
+                            {Array.from({ length: 31 }, (_, i) => i + 1).map(day => (
+                              <option key={day} value={day.toString().padStart(2, '0')}>{day}</option>
+                            ))}
+                          </select>
+                          <span className="pointer-events-none absolute right-3 top-1/2 transform -translate-y-1/2 text-blue-400">
+                            <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" /></svg>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              ))}
             </div>
           </div>
 

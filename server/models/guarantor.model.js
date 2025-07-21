@@ -20,6 +20,10 @@
         type:String,
         default:""
     },
+    birthDate: {
+        type: String,
+        required: true // yyyy/mm/dd
+    },
     residenceEndDate:{
         type:String,
         required:true,
@@ -40,6 +44,10 @@
       fullName :{
           type:String,
           required:true
+      },
+      birthDate: {
+          type: String,
+          required: true // yyyy/mm/dd
       },
        phone  :{
           type:Number,

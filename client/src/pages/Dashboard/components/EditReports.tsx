@@ -7,6 +7,8 @@ const EditReports: React.FC = () => {
   const navigate = useNavigate();
   const { loading, error, guarantors, refetch } = useGetAllGuarantors();
   const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US');
@@ -19,6 +21,17 @@ const EditReports: React.FC = () => {
   const filteredGuarantors = guarantors.filter(guarantor => 
     guarantor.cardNumber?.toString().includes(searchTerm)
   );
+
+  // Pagination logic
+  const paginatedGuarantors = filteredGuarantors.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+  const pageCount = Math.ceil(filteredGuarantors.length / itemsPerPage);
+
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
 
   const handleEditClick = (cardNumber: number) => {
     navigate(`/edit-guarantor/${cardNumber}`);
@@ -139,7 +152,7 @@ const EditReports: React.FC = () => {
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                      {filteredGuarantors.map((guarantor, index) => (
+                      {paginatedGuarantors.map((guarantor, index) => (
                         <tr key={guarantor._id || index} className="hover:bg-gray-50">
                           <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                             {guarantor.fullName}
@@ -171,6 +184,26 @@ const EditReports: React.FC = () => {
                       ))}
                     </tbody>
                   </table>
+                  {/* Pagination Controls */}
+                  <div className="flex justify-center items-center gap-2 mt-6 select-none mb-5">
+                    <button
+                      onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                      disabled={currentPage === 1}
+                      className="px-5 h-10 rounded-full border-2 border-green-500 bg-white text-green-600 font-bold hover:bg-gradient-to-l hover:from-green-100 hover:to-emerald-100 transition disabled:opacity-40 disabled:cursor-not-allowed shadow-sm"
+                    >
+                      السابق
+                    </button>
+                    <span className="flex items-center justify-center min-w-[40px] h-10 px-3 rounded-lg border-2 mx-0.5 font-bold  bg-gradient-to-l from-green-500 to-emerald-500 text-white border-green-600 scale-110 shadow-lg">
+                      {currentPage}
+                    </span>
+                    <button
+                      onClick={() => setCurrentPage((prev) => Math.min(prev + 1, pageCount))}
+                      disabled={currentPage === pageCount || pageCount === 0}
+                      className="px-5 h-10 rounded-full border-2 border-green-500 bg-white text-green-600 font-bold hover:bg-gradient-to-l hover:from-green-100 hover:to-emerald-100 transition disabled:opacity-40 disabled:cursor-not-allowed shadow-sm"
+                    >
+                      التالي
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <div className="text-center py-8">
