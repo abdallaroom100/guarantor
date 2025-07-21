@@ -3,8 +3,8 @@ import axios from "axios";
 import { useState, useEffect } from "react";
 
 export interface Worker {
-  birthDate: any;
-  birthDate: any;
+  birthDate: String;
+
   _id: string;
   fullName: string;
   phone: number;
@@ -16,8 +16,7 @@ export interface Worker {
 }
 
 export interface Guarantor {
-  birthDate: any;
-  birthDate: any;
+  birthDate: String;
   _id: string;
   fullName: string;
   phone: number;

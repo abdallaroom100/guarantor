@@ -113,7 +113,7 @@ const EditGuarantorPage: React.FC = () => {
         birthYear,
         birthMonth,
         birthDay,
-        workers: workersWithExpiryFields
+        workers: workersWithExpiryFields as Worker[]
       });
     }
   }, [guarantor]);
