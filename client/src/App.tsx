@@ -49,7 +49,7 @@ function App() {
               <Route path="/workers-details" element={<WorkersDetailsPage />} />
               <Route path="/worker-details/:residenceNumber" element={<WorkerDetailsPage />} />
               <Route path="/edit-guarantor/:cardNumber" element={<EditGuarantorPage />} />
-              <Route path="/edit-agent/:cardNumber" element={<EditSingleAgentPage />} />
+              <Route path="/edit-agent/:id" element={<EditSingleAgentPage />} />
             </Route>
           </Routes>
         </Suspense>

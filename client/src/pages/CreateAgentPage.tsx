@@ -11,14 +11,16 @@ const CreateAgentPage: React.FC = () => {
     managerPhone: '',
     birthYear: '',
     birthMonth: '',
-    birthDay: ''
+    birthDay: '',
+    passportNumber: '',
+    visaType: ''
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [isCreated, setIsCreated] = useState(false);
 
   const resetForm = () => {
-    setAgent({ fullName: '', phone: '', cardNumber: '', managerName: '', managerPhone: '', birthYear: '', birthMonth: '', birthDay: '' });
+    setAgent({ fullName: '', phone: '', cardNumber: '', managerName: '', managerPhone: '', birthYear: '', birthMonth: '', birthDay: '', passportNumber: '', visaType: '' });
   };
 
   useEffect(() => {
@@ -45,7 +47,9 @@ const CreateAgentPage: React.FC = () => {
         cardNumber: agent.cardNumber,
         managerName: agent.managerName,
         managerPhone: agent.managerPhone,
-        birthDate
+        birthDate,
+        passportNumber: agent.passportNumber,
+        visaType: agent.visaType
       });
       setIsCreated(true);
       setLoading(false);
@@ -65,7 +69,7 @@ const CreateAgentPage: React.FC = () => {
               <div className="bg-blue-100 p-3 rounded-full ml-4">
                 <User className="h-8 w-8 text-blue-600" />
               </div>
-              <h1 className="text-xl md:text-3xl font-bold text-gray-800">إنشاء طلب تأشيرة (Agent)</h1>
+              <h1 className="text-xl md:text-3xl font-bold text-gray-800">إنشاء طلب تأشيرة </h1>
             </div>
             <div className="w-full h-1 bg-gradient-to-r from-blue-500 to-indigo-500 mx-auto rounded-full"></div>
           </div>
@@ -76,7 +80,7 @@ const CreateAgentPage: React.FC = () => {
               <User className="h-6 w-6 text-blue-500" />
               بيانات طالب التأشيرة
             </h2>
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid lg:grid-cols-2  xl:grid-cols-3 gap-6">
               <div className="relative">
                 <label className="block text-sm font-medium text-gray-700 mb-2">اسم طالب التأشيرة</label>
                 <div className="relative">
@@ -92,10 +96,10 @@ const CreateAgentPage: React.FC = () => {
                 </div>
               </div>
               <div className="relative">
-                <label className="block text-sm font-medium text-gray-700 mb-2">رقم البطاقة</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">رقم الهوية</label>
                 <div className="relative">
                   <CreditCard className="absolute right-3 top-3 h-5 w-5 text-gray-400" />
-                  <input type="text" name="cardNumber" placeholder="رقم البطاقة" value={agent.cardNumber} onChange={handleChange} className="w-full pr-10 pl-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 hover:bg-white" required />
+                  <input type="text" name="cardNumber" placeholder="رقم الهوية" value={agent.cardNumber} onChange={handleChange} className="w-full pr-10 pl-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 hover:bg-white" required />
                 </div>
               </div>
               <div className="relative">
@@ -112,7 +116,7 @@ const CreateAgentPage: React.FC = () => {
                       <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" /></svg>
                     </span>
                   </div>
-                  <div className="relative w-full md:w-fit mb-2">
+                  <div className="relative w-full md:w-fit mb-2 ">
                     <select name="birthMonth" value={agent.birthMonth} onChange={handleChange} className="bg-white shadow-sm rounded-lg border-2 border-blue-200 focus:border-blue-500 px-2 py-2 pr-12 text-sm appearance-none transition-all duration-200 hover:border-blue-400">
                       <option value="">الشهر</option>
                       {Array.from({ length: 12 }, (_, i) => i + 1).map(month => (
@@ -148,6 +152,25 @@ const CreateAgentPage: React.FC = () => {
                 <div className="relative">
                   <Phone className="absolute right-3 top-3 h-5 w-5 text-gray-400" />
                   <input type="text" name="managerPhone" placeholder="رقم جوال الوكيل" value={agent.managerPhone} onChange={handleChange} className="w-full pr-10 pl-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 hover:bg-white" required />
+                </div>
+              </div>
+              <div className="relative">
+                <label className="block text-sm font-medium text-gray-700 mb-2">رقم الجواز</label>
+                <div className="relative">
+                  <input type="text" name="passportNumber" placeholder="رقم الجواز" value={agent.passportNumber} onChange={handleChange} className="w-full pr-4 pl-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 hover:bg-white" />
+                </div>
+              </div>
+              <div className="relative">
+                <label className="block text-sm font-medium text-gray-700 mb-2">نوع التأشيرة</label>
+                <div className="relative">
+                  <select name="visaType" value={agent.visaType} onChange={handleChange} className="bg-white shadow-sm rounded-lg border-2 border-blue-200 focus:border-blue-500 px-2 py-2 pr-12 text-sm appearance-none transition-all duration-200 hover:border-blue-400">
+                    <option value="">اختر نوع التأشيرة</option>
+                    <option value="أحادية">أحادية</option>
+                    <option value="متعددة">متعددة</option>
+                  </select>
+                  <span className="pointer-events-none absolute right-3 top-1/2 transform -translate-y-1/2 text-blue-400">
+                    <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" /></svg>
+                  </span>
                 </div>
               </div>
             </div>

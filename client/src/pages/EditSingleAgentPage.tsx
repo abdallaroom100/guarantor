@@ -10,7 +10,7 @@ const statusOptions = [
 ];
 
 const EditSingleAgentPage: React.FC = () => {
-  const { cardNumber } = useParams<{ cardNumber: string }>();
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [form, setForm] = useState({
     fullName: '',
@@ -22,6 +22,8 @@ const EditSingleAgentPage: React.FC = () => {
     birthMonth: '',
     birthDay: '',
     status: 'pending',
+    passportNumber: '',
+    visaType: ''
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -31,7 +33,7 @@ const EditSingleAgentPage: React.FC = () => {
     const fetchAgent = async () => {
       setLoading(true);
       try {
-        const res = await axios.get(`/agent/${cardNumber}`);
+        const res = await axios.get(`/agent/${id}`);
         const agent = res.data;
         let birthYear = '', birthMonth = '', birthDay = '';
         if (agent.birthDate) {
@@ -50,6 +52,8 @@ const EditSingleAgentPage: React.FC = () => {
           birthMonth,
           birthDay,
           status: agent.status || 'pending',
+          passportNumber: agent.passportNumber || '',
+          visaType: agent.visaType || ''
         });
         setLoading(false);
       } catch (err: any) {
@@ -58,7 +62,7 @@ const EditSingleAgentPage: React.FC = () => {
       }
     };
     fetchAgent();
-  }, [cardNumber]);
+  }, [id]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -72,7 +76,7 @@ const EditSingleAgentPage: React.FC = () => {
       const birthDate = form.birthYear && form.birthMonth && form.birthDay
         ? `${form.birthYear}-${form.birthMonth.padStart(2, '0')}-${form.birthDay.padStart(2, '0')}`
         : '';
-      await axios.put(`/agent/${cardNumber}`, {
+      await axios.put(`/agent/${id}`, {
         fullName: form.fullName,
         phone: form.phone,
         cardNumber: form.cardNumber,
@@ -80,9 +84,12 @@ const EditSingleAgentPage: React.FC = () => {
         managerPhone: form.managerPhone,
         birthDate,
         status: form.status,
+        passportNumber: form.passportNumber,
+        visaType: form.visaType
       });
       setSuccess(true);
       setLoading(false);
+     
     } catch (err: any) {
       setError(err.response?.data?.error || 'حدث خطأ');
       setLoading(false);
@@ -130,7 +137,7 @@ const EditSingleAgentPage: React.FC = () => {
               </div>
             </div>
             <div className="relative">
-              <label className="block text-sm font-medium text-gray-700 mb-2">رقم البطاقة</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">رقم الهوية</label>
               <div className="relative">
                 <CreditCard className="absolute right-3 top-3 h-5 w-5 text-gray-400" />
                 <input type="text" name="cardNumber" value={form.cardNumber} onChange={handleChange} className="w-full pr-10 pl-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200" />
@@ -148,6 +155,12 @@ const EditSingleAgentPage: React.FC = () => {
               <div className="relative">
                 <Phone className="absolute right-3 top-3 h-5 w-5 text-gray-400" />
                 <input type="text" name="managerPhone" value={form.managerPhone} onChange={handleChange} className="w-full pr-10 pl-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200" />
+              </div>
+            </div>
+            <div className="relative">
+              <label className="block text-sm font-medium text-gray-700 mb-2">رقم الجواز</label>
+              <div className="relative">
+                <input type="text" name="passportNumber" placeholder="رقم الجواز" value={form.passportNumber} onChange={handleChange} className="w-full pr-4 pl-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 hover:bg-white" />
               </div>
             </div>
             <div className="relative">
@@ -195,6 +208,19 @@ const EditSingleAgentPage: React.FC = () => {
                   {statusOptions.map(opt => (
                     <option key={opt.value} value={opt.value}>{opt.label}</option>
                   ))}
+                </select>
+                <span className="pointer-events-none absolute right-3 top-1/2 transform -translate-y-1/2 text-blue-400">
+                  <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" /></svg>
+                </span>
+              </div>
+            </div>
+            <div className="relative">
+              <label className="block text-sm font-medium text-gray-700 mb-2">نوع التأشيرة</label>
+              <div className="relative">
+                <select name="visaType" value={form.visaType} onChange={handleChange} className="bg-white shadow-sm rounded-lg border-2 border-blue-200 focus:border-blue-500 px-2 py-2 pr-12 text-sm appearance-none transition-all duration-200 hover:border-blue-400">
+                  <option value="">اختر نوع التأشيرة</option>
+                  <option value="أحادية">أحادية</option>
+                  <option value="متعددة">متعددة</option>
                 </select>
                 <span className="pointer-events-none absolute right-3 top-1/2 transform -translate-y-1/2 text-blue-400">
                   <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" /></svg>

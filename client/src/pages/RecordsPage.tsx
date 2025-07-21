@@ -13,9 +13,9 @@ const RecordsPage: React.FC = () => {
   const [admin, setAdmin] = useState<any>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // فلترة البيانات حسب البحث برقم البطاقة وحالة الإقامة
+  // فلترة البيانات حسب البحث برقم الهوية وحالة الإقامة
   const filteredBySearch = (filteredData || []).filter((item: any) => {
-    // فلترة البحث برقم البطاقة
+    // فلترة البحث برقم الهوية
     let matchesSearch = false;
     if (filterType === 'workers') {
       const worker = item as Worker & { guarantorName: string; guarantorCardNumber: number };
@@ -204,7 +204,7 @@ const RecordsPage: React.FC = () => {
               <div className="bg-blue-100 p-3 rounded-full ml-4">
                 <FileText className="h-8 w-8 text-blue-600" />
               </div>
-              <h1 className="text-xl  md:text-3xl font-bold text-gray-800">سجل الكفيلين والعملاء</h1>
+              <h1 className="text-xl  md:text-3xl font-bold text-gray-800">سجل الكفلاء والعمال</h1>
             </div>
             <div className="w-full h-1 bg-gradient-to-r from-blue-500 to-indigo-500 mx-auto rounded-full"></div>
           </div>
@@ -224,7 +224,7 @@ const RecordsPage: React.FC = () => {
                 }`}
               >
                 <User className="h-4 w-4" />
-                الكفيلين
+                الكفلاء 
               </button>
               <button
                 onClick={() => filterData('workers')}
@@ -235,7 +235,7 @@ const RecordsPage: React.FC = () => {
                 }`}
               >
                 <Users className="h-4 w-4" />
-                العملاء
+                العمال
               </button>
             </div>
 
@@ -250,14 +250,7 @@ const RecordsPage: React.FC = () => {
                     className={`flex items-center justify-between w-36 px-3 py-2 rounded-lg border-2 transition-all duration-200 hover:shadow-md ${getFilterColor()}`}
                   >
                     <span className="text-sm font-medium">{getFilterDisplayText()}</span>
-                    <svg 
-                      className={`w-4 h-4 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} 
-                      fill="none" 
-                      stroke="currentColor" 
-                      viewBox="0 0 24 24"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
+                    
                   </button>
 
                   {/* Dropdown Menu */}
@@ -319,7 +312,7 @@ const RecordsPage: React.FC = () => {
             <div className="w-64">
               <input
                 type="text"
-                placeholder="البحث برقم البطاقة..."
+                placeholder="البحث برقم الهوية..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
@@ -385,7 +378,7 @@ const RecordsPage: React.FC = () => {
                                   {worker.fullName}
                                 </button>
                               </td>
-                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{formatPhone(worker.phone)}</td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{worker.phone}</td>
                               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{worker.residenceNumber}</td>
                               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{formatDate(worker.residenceEndDate)}</td>
                               <td className="px-6 py-4 whitespace-nowrap">
@@ -402,7 +395,7 @@ const RecordsPage: React.FC = () => {
                                   {worker.guarantorName}
                                 </button>
                               </td>
-                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{formatPhone(worker.guarantorPhone)}</td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{worker.guarantorPhone}</td>
                               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                 <button
                                   onClick={() => navigate(`/worker-details/${worker.residenceNumber}`)}
@@ -430,7 +423,7 @@ const RecordsPage: React.FC = () => {
                         <tr>
                           <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">اسم الكفيل</th>
                           <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">رقم الجوال</th>
-                          <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">رقم البطاقة</th>
+                          <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">رقم الهوية</th>
                           <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">عدد العملاء</th>
                           <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">تاريخ الإنشاء</th>
                           <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الإجراءات</th>
@@ -450,7 +443,7 @@ const RecordsPage: React.FC = () => {
                                   {guarantor.fullName}
                                 </button>
                               </td>
-                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{formatPhone(guarantor.phone)}</td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{guarantor.phone}</td>
                               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{guarantor.cardNumber}</td>
                               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{guarantor.workers?.length || 0}</td>
                               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{guarantor.createdAt ? formatDate(guarantor.createdAt) : '-'}</td>

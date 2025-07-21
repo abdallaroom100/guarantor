@@ -204,10 +204,10 @@ const Reports: React.FC = () => {
             {/* Search */}
             <div className="flex-1">
               <div className="relative">
-                <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+               
                 <input
                   type="text"
-                  placeholder="البحث برقم البطاقة..."
+                  placeholder="البحث برقم الهوية..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
@@ -308,7 +308,7 @@ const Reports: React.FC = () => {
                           return (
                             <tr key={worker._id || index} className="hover:bg-gray-50">
                               <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{worker.fullName}</td>
-                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{formatPhone(worker.phone)}</td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{worker.phone}</td>
                               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{worker.residenceNumber}</td>
                               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{worker.guarantorName || '-'}</td>
                               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">

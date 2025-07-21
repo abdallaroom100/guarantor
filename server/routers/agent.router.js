@@ -7,10 +7,10 @@ import { createAgent, deleteAgentTemporary, getAgent, getAgents, updateAgent } f
 const router = Router()
 
 router.post("/create",createAgent)
-router.put("/:cardNumber",updateAgent)
+router.put("/:id",updateAgent)
 router.post("/temp",deleteAgentTemporary)
 router.get("/",getAgents)
-router.get("/:cardId",getAgent)
+router.get("/:id",getAgent)
 
 
 export default router

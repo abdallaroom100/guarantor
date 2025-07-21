@@ -401,7 +401,7 @@ const EditGuarantorPage: React.FC = () => {
               
               <div className="relative">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  رقم البطاقة
+                  رقم الهوية
                 </label>
                 <div className="relative">
                   <CreditCard className="absolute right-3 top-3 h-5 w-5 text-gray-400" />

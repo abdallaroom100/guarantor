@@ -48,9 +48,7 @@ const CreateSponsorPage: React.FC = () => {
   };
 
   const addEmployee = () => {
-    if (employees.length < 4) {
-      setEmployees([...employees, { name: '', phone: '', residency: '', amount: '', expiryYear: '', expiryMonth: '', expiryDay: '', birthYear: '', birthMonth: '', birthDay: '' }]);
-    }
+    setEmployees([...employees, { name: '', phone: '', residency: '', amount: '', expiryYear: '', expiryMonth: '', expiryDay: '', birthYear: '', birthMonth: '', birthDay: '' }]);
   };
 
   const handleRemoveEmployee = (idx: number) => {
@@ -106,7 +104,7 @@ const CreateSponsorPage: React.FC = () => {
             <div className="bg-blue-100 p-3 rounded-full ml-4">
               <User className="h-8 w-8 text-blue-600" />
             </div>
-            <h1 className="text-xl  md:text-3xl font-bold text-gray-800">إنشاء كفيل وعملاء</h1>
+            <h1 className="text-xl  md:text-3xl font-bold text-gray-800">إنشاء كفيل وعمال</h1>
           </div>
           <div className="w-full h-1 bg-gradient-to-r from-blue-500 to-indigo-500 mx-auto rounded-full"></div>
           </div>
@@ -159,14 +157,14 @@ const CreateSponsorPage: React.FC = () => {
               
               <div className="relative">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  رقم البطاقة (Card Number)
+                  رقم الهوية
                 </label>
                 <div className="relative">
                   <CreditCard className="absolute right-3 top-3 h-5 w-5 text-gray-400" />
                   <input
                     type="text"
                     name="id"
-                    placeholder="أدخل رقم البطاقة"
+                    placeholder="أدخل رقم الهوية"
                     value={sponsor.id}
                     onChange={handleSponsorChange}
                     className="w-full pr-10 pl-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 hover:bg-white"
@@ -244,12 +242,7 @@ const CreateSponsorPage: React.FC = () => {
               <button
                 type="button"
                 onClick={addEmployee}
-                disabled={employees.length >= 4}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 ${
-                  employees.length >= 4 
-                    ? 'bg-gray-400 text-gray-600 cursor-not-allowed' 
-                    : 'bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:from-green-600 hover:to-emerald-600'
-                }`}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:from-green-600 hover:to-emerald-600`}
               >
                 <Plus className="h-4 w-4" />
                 إضافة عميل جديد

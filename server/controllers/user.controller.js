@@ -39,7 +39,7 @@ export const createGuarantor = async (req, res) => {
     if (String(cardNumber).length != 10) {
       return res  
         .status(400)
-        .json({ error: "رقم البطاقة يجب ان يحتوي علي 10 ارقام" });
+        .json({ error: "رقم الهوية يجب ان يحتوي علي 10 ارقام" });
     }
     if (!Array.isArray(workers)) {
       return res.status(400).json({ error: "حقل العمال يجب ان يكون جدول" });

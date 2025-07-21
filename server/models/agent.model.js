@@ -37,6 +37,15 @@ const agentSchema = new Schema({
     managerPhone:{
         type:String,
         required:true
+    },
+    passportNumber: {
+        type: String,
+        required: false
+    },
+    visaType: {
+        type: String,
+        enum: ['أحادية', 'متعددة'],
+        required: true
     }
   
 },{

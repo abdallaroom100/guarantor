@@ -126,7 +126,7 @@ const EditAgentPage: React.FC = () => {
           <div className="mb-6 flex flex-col md:flex-row gap-4 items-center justify-between">
             <input
               type="text"
-              placeholder="ابحث برقم البطاقة..."
+              placeholder="ابحث برقم الهوية..."
               value={search}
               onChange={e => setSearch(e.target.value)}
               className="w-full md:w-1/3 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -142,13 +142,15 @@ const EditAgentPage: React.FC = () => {
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">اسم الوكيل</th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">رقم جوال الوكيل</th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">تاريخ الميلاد</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">حالة الطلب</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">نوع التأشيرة</th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">تعديل</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {paginatedAgents.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="py-8 text-center text-gray-500 text-lg">
+                    <td colSpan={9} className="py-8 text-center text-gray-500 text-lg">
                       <div className="flex flex-col items-center justify-center">
                         <User className="mx-auto h-12 w-12 text-gray-400 mb-2" />
                         <h3 className="mt-2 text-sm font-medium text-gray-900">لا توجد بيانات وكلاء حالياً</h3>
@@ -165,10 +167,12 @@ const EditAgentPage: React.FC = () => {
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{agent.managerName}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{agent.managerPhone}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{agent.birthDate}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{agent.status}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{agent.visaType}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         <button
                           className="bg-gradient-to-r from-emerald-500 to-blue-500 text-white px-4 py-1 rounded-lg hover:from-emerald-600 hover:to-blue-600 transition"
-                          onClick={() => handleEditClick(agent.cardNumber)}
+                          onClick={() => handleEditClick(agent._id)}
                         >
                           تعديل
                         </button>
@@ -200,7 +204,7 @@ const EditAgentPage: React.FC = () => {
                   </div>
                 </div>
                 <div className="relative">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">رقم البطاقة</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">رقم الهوية</label>
                   <div className="relative">
                     <CreditCard className="absolute right-3 top-3 h-5 w-5 text-gray-400" />
                     <input type="text" name="cardNumber" value={editForm.cardNumber} onChange={handleEditChange} className="w-full pr-10 pl-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200" />

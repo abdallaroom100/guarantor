@@ -147,16 +147,6 @@ const Dashboard = () => {
           >
              طلب تأشيرة
           </button>
-          <button
-            className={`w-full p-3 mb-1 md:px-4 md:py-3 rounded-xl text-lg font-semibold text-right transition-all duration-300 transform hover:scale-105 ${
-              activeTab === "editAgent"
-                ? "bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-lg shadow-emerald-500/30"
-                : "text-gray-600 hover:text-gray-800 hover:bg-gray-200 hover:shadow-md"
-            }`}
-            onClick={() => handleTabClick("editAgent")}
-          >
-            تعديل  التأشيرات
-          </button>
           
           <button
             className={`w-full p-3 mb-1 md:px-4 md:py-3 rounded-xl text-lg font-semibold text-right transition-all duration-300 transform hover:scale-105 ${
@@ -183,16 +173,16 @@ const Dashboard = () => {
           {/* Only show Process Flow button if admin.rule === 'manager' */}
           {/* {admin && (admin.rule === "manager" || admin.rule === "committee") && (
             <button
-              className={`w-full p-3 mb-1 md:px-4 md:py-3 rounded-xl text-lg font-semibold text-right transition-all duration-300 transform hover:scale-105 ${
-                activeTab === "processFlow"
-                  ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30"
-                  : "text-gray-600 hover:text-gray-800 hover:bg-gray-200 hover:shadow-md"
+            className={`w-full p-3 mb-1 md:px-4 md:py-3 rounded-xl text-lg font-semibold text-right transition-all duration-300 transform hover:scale-105 ${
+              activeTab === "processFlow"
+              ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30"
+              : "text-gray-600 hover:text-gray-800 hover:bg-gray-200 hover:shadow-md"
               }`}
               onClick={() => handleTabClick("processFlow")}
-            >
+              >
               سير العمليات
-            </button>
-          )} */}
+              </button>
+              )} */}
 
           {/* Only show this button if admin.rule === 'manager' */}
           
@@ -209,6 +199,16 @@ const Dashboard = () => {
           
           {/* قائمة المحذوفين */}
          
+              <button
+                className={`w-full p-3 mb-1 md:px-4 md:py-3 rounded-xl text-lg font-semibold text-right transition-all duration-300 transform hover:scale-105 ${
+                  activeTab === "editAgent"
+                    ? "bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-lg shadow-emerald-500/30"
+                    : "text-gray-600 hover:text-gray-800 hover:bg-gray-200 hover:shadow-md"
+                }`}
+                onClick={() => handleTabClick("editAgent")}
+              >
+                تعديل  التأشيرات
+              </button>
           
           <div className="pt-2 space-y-3">
             {/* External Links Section */}
