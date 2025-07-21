@@ -8,7 +8,7 @@
         required:true
     },
     phone  :{
-        type:Number,
+        type:String,
         required:true
     },
     residenceNumber:{
@@ -50,7 +50,7 @@
           required: true // yyyy/mm/dd
       },
        phone  :{
-          type:Number,
+          type:String,
           required:true
       },
        cardNumber  :{
@@ -62,7 +62,11 @@
         type:[workerSchema],
         required:true,
 
-      }
+      },
+      isDeleted:{
+        type:Boolean,
+        default:false
+    },
       
   },{
     timestamps:true

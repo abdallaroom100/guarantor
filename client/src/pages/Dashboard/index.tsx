@@ -13,6 +13,8 @@ import { usePersistentState } from "../../hooks/usePersistentState";
 import DeletedList from "./components/DeletedList";
 import CreateSponsorPage from "../CreateSponsorPage";
 import RecordsPage from "../RecordsPage";
+import CreateAgentPage from '../CreateAgentPage';
+import EditAgentPage from '../EditAgentPage';
 
 const Dashboard = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -49,6 +51,10 @@ const Dashboard = () => {
         return <EditReports />;
       case "acceptedRecords":
         return <RecordsPage />;
+      case "createAgent":
+        return <CreateAgentPage />;
+      case "editAgent":
+        return <EditAgentPage />;
       case "processFlow":
         // Only allow access to ProcessFlow if user is manager or committee
         if (admin && (admin.rule === "manager" || admin.rule === "committee")) {
@@ -130,6 +136,26 @@ const Dashboard = () => {
             onClick={() => handleTabClick("beneficiaries")}
           >
             انشاء كفيل وعمال
+          </button>
+          <button
+            className={`w-full p-3 mb-2  md:px-4 md:py-3 rounded-xl text-lg font-semibold text-right transition-all duration-300 transform hover:scale-105 ${
+              activeTab === "createAgent"
+                ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30"
+                : "text-gray-600 hover:text-gray-800 hover:bg-gray-200 hover:shadow-md"
+            }`}
+            onClick={() => handleTabClick("createAgent")}
+          >
+             طلب تأشيرة
+          </button>
+          <button
+            className={`w-full p-3 mb-1 md:px-4 md:py-3 rounded-xl text-lg font-semibold text-right transition-all duration-300 transform hover:scale-105 ${
+              activeTab === "editAgent"
+                ? "bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-lg shadow-emerald-500/30"
+                : "text-gray-600 hover:text-gray-800 hover:bg-gray-200 hover:shadow-md"
+            }`}
+            onClick={() => handleTabClick("editAgent")}
+          >
+            تعديل  التأشيرات
           </button>
           
           <button

@@ -8,10 +8,10 @@ import hotToast from '../common/hotToast';
 interface Worker {
   _id: string;
   fullName: string;
-  phone: number;
-  residenceNumber: number;
+  phone: string;
+  residenceNumber: string;
   residenceEndDate: string;
-  price: number;
+  price: string;
   notice?: string;
   paysHistory?: Record<string, number[]>;
   expiryYear?: string;
@@ -26,8 +26,8 @@ interface Worker {
 interface Guarantor {
   _id: string;
   fullName: string;
-  phone: number;
-  cardNumber: number;
+  phone: string;
+  cardNumber: string;
   birthDate?: string;
   birthYear?: string;
   birthMonth?: string;
@@ -51,6 +51,14 @@ const EditGuarantorPage: React.FC = () => {
     birthDay: '',
     workers: [] as Worker[]
   });
+
+  // إضافة حالة الأخطاء للحقول الرقمية للكفيل
+  const [guarantorErrors, setGuarantorErrors] = useState({
+    phone: '',
+    cardNumber: ''
+  });
+  // إضافة حالة الأخطاء للحقول الرقمية للعمال (مصفوفة)
+  const [workerErrors, setWorkerErrors] = useState<{phone: string; residenceNumber: string; price: string;}[]>([]);
 
   const [editingWorker, setEditingWorker] = useState<number | null>(null);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear().toString());
@@ -80,6 +88,9 @@ const EditGuarantorPage: React.FC = () => {
         }
         return {
           ...worker,
+          phone: worker.phone?.toString() || '',
+          residenceNumber: worker.residenceNumber?.toString() || '',
+          price: worker.price?.toString() || '',
           expiryYear,
           expiryMonth,
           expiryDay,
@@ -108,26 +119,57 @@ const EditGuarantorPage: React.FC = () => {
   }, [guarantor]);
 
   const handleGuarantorChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+    const { name, value } = e.target;
+    if (name === 'phone' || name === 'cardNumber') {
+      if (/^\d*$/.test(value)) {
+        setFormData({
+          ...formData,
+          [name]: value
+        });
+        setGuarantorErrors({
+          ...guarantorErrors,
+          [name]: ''
+        });
+      } else {
+        setGuarantorErrors({
+          ...guarantorErrors,
+          [name]: 'يجب إدخال أرقام فقط'
+        });
+      }
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value
+      });
+    }
   };
 
   const handleWorkerChange = (index: number, field: string, value: string) => {
     const updatedWorkers = [...formData.workers];
-    updatedWorkers[index] = {
-      ...updatedWorkers[index],
-      [field]: field === 'phone' || field === 'residenceNumber'
-        ? parseInt(value) || 0 
-        : field === 'price'
-        ? value === '' ? '' : parseInt(value) || 0
-        : value
-    };
+    const updatedErrors = [...workerErrors];
+    if (field === 'phone' || field === 'residenceNumber' || field === 'price') {
+      if (/^\d*$/.test(value)) {
+        updatedWorkers[index] = {
+          ...updatedWorkers[index],
+          [field]: value
+        };
+        if (!updatedErrors[index]) updatedErrors[index] = {phone: '', residenceNumber: '', price: ''};
+        updatedErrors[index][field] = '';
+      } else {
+        if (!updatedErrors[index]) updatedErrors[index] = {phone: '', residenceNumber: '', price: ''};
+        updatedErrors[index][field] = 'يجب إدخال أرقام فقط';
+      }
+    } else {
+      updatedWorkers[index] = {
+        ...updatedWorkers[index],
+        [field]: value
+      };
+    }
     setFormData({
       ...formData,
       workers: updatedWorkers
     });
+    setWorkerErrors(updatedErrors);
   };
 
   const addWorker = () => {
@@ -135,8 +177,8 @@ const EditGuarantorPage: React.FC = () => {
       const newWorker = {
         _id: `temp_${Date.now()}`,
         fullName: '',
-        phone: 0,
-        residenceNumber: 0,
+        phone: '',
+        residenceNumber: '',
         residenceEndDate: '',
         price: '',
         notice: '',
@@ -152,12 +194,10 @@ const EditGuarantorPage: React.FC = () => {
         ...formData,
         workers: [
           ...formData.workers,
-          {
-            ...newWorker,
-            price: typeof newWorker.price === 'string' && newWorker.price !== '' ? parseInt(newWorker.price) || 0 : 0
-          }
+          newWorker
         ]
       });
+      setWorkerErrors([...workerErrors, {phone: '', residenceNumber: '', price: ''}]);
     }
   };
 
@@ -167,6 +207,7 @@ const EditGuarantorPage: React.FC = () => {
       ...formData,
       workers: updatedWorkers
     });
+    setWorkerErrors(workerErrors.filter((_, i) => i !== index));
   };
 
   // دالة للتحكم في paysHistory
@@ -210,11 +251,16 @@ const EditGuarantorPage: React.FC = () => {
   };
 
   const handleSubmit = async () => {
+    // تحقق من عدم وجود أخطاء
+    if (guarantorErrors.phone || guarantorErrors.cardNumber || workerErrors.some(e => e && (e.phone || e.residenceNumber || e.price))) {
+      hotToast({type: 'error', message: 'يرجى تصحيح جميع الأخطاء قبل الحفظ'});
+      return;
+    }
     try {
       const submitData = {
         fullName: formData.fullName,
-        phone: parseInt(formData.phone) || 0,
-        cardNumber: parseInt(formData.cardNumber) || 0,
+        phone: formData.phone,
+        cardNumber: formData.cardNumber,
         birthDate: formData.birthYear && formData.birthMonth && formData.birthDay
           ? `${formData.birthYear}-${formData.birthMonth.padStart(2, '0')}-${formData.birthDay.padStart(2, '0')}`
           : '',
@@ -232,7 +278,7 @@ const EditGuarantorPage: React.FC = () => {
             residenceNumber: worker.residenceNumber,
             residenceEndDate,
             birthDate,
-            price: typeof worker.price === 'string' && worker.price === '' ? 0 : worker.price,
+            price: worker.price,
             notice: worker.notice || '',
             paysHistory: worker.paysHistory || {}
           };
@@ -348,6 +394,9 @@ const EditGuarantorPage: React.FC = () => {
                     className="w-full pr-10 pl-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200"
                   />
                 </div>
+                {guarantorErrors.phone && (
+                  <div className="text-red-500 text-xs mt-1">{guarantorErrors.phone}</div>
+                )}
               </div>
               
               <div className="relative">
@@ -364,6 +413,9 @@ const EditGuarantorPage: React.FC = () => {
                     className="w-full pr-10 pl-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200"
                   />
                 </div>
+                {guarantorErrors.cardNumber && (
+                  <div className="text-red-500 text-xs mt-1">{guarantorErrors.cardNumber}</div>
+                )}
               </div>
               <div className="relative">
                 <label className="block text-sm font-medium text-gray-700 mb-2">تاريخ الميلاد</label>
@@ -449,6 +501,9 @@ const EditGuarantorPage: React.FC = () => {
                           onChange={(e) => handleWorkerChange(index, 'phone', e.target.value)}
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
+                        {workerErrors[index] && workerErrors[index].phone && (
+                          <div className="text-red-500 text-xs mt-1">{workerErrors[index].phone}</div>
+                        )}
                       </div>
                       
                       <div>
@@ -459,16 +514,22 @@ const EditGuarantorPage: React.FC = () => {
                           onChange={(e) => handleWorkerChange(index, 'residenceNumber', e.target.value)}
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
+                        {workerErrors[index] && workerErrors[index].residenceNumber && (
+                          <div className="text-red-500 text-xs mt-1">{workerErrors[index].residenceNumber}</div>
+                        )}
                       </div>
                       
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">المبلغ</label>
                         <input
-                          type="number"
-                          value={worker.price === 0 ? '' : worker.price}
+                          type="text"
+                          value={worker.price}
                           onChange={(e) => handleWorkerChange(index, 'price', e.target.value)}
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
+                        {workerErrors[index] && workerErrors[index].price && (
+                          <div className="text-red-500 text-xs mt-1">{workerErrors[index].price}</div>
+                        )}
                       </div>
                     </div>
                     

@@ -357,114 +357,118 @@ const RecordsPage: React.FC = () => {
               {filterType === 'workers' ? (
                 // Workers Table
                 <>
-                  <table className="min-w-full bg-white border border-gray-200 rounded-lg">
-                    <thead className="bg-gray-50">
-                      <tr>
-                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">اسم العميل</th>
-                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">رقم الجوال</th>
-                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">رقم الإقامة</th>
-                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">تاريخ انتهاء الإقامة</th>
-                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">حالة الإقامة</th>
-                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">المبلغ</th>
-                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">اسم الكفيل</th>
-                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">رقم حوال الكفيل</th>
-                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الإجراءات</th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                      {paginatedData.map((worker: any, index: number) => {
-                        const residenceStatus = getResidenceStatus(worker.residenceEndDate);
-                        return (
-                          <tr key={worker._id || index} className={`hover:bg-gray-50 ${residenceStatus.bgColor}`}>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                              <button
-                                onClick={() => navigate(`/worker-details/${worker.residenceNumber}`)}
-                                className="text-purple-600 hover:text-purple-800 hover:underline transition-all duration-200"
-                              >
-                                {worker.fullName}
-                              </button>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{formatPhone(worker.phone)}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{worker.residenceNumber}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{formatDate(worker.residenceEndDate)}</td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${residenceStatus.color}`}>
-                                {residenceStatus.status}
-                              </span>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{worker.price} ريال</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                              <button
-                                onClick={() => navigate(`/guarantor-details/${worker.guarantorCardNumber}`)}
-                                className="text-blue-600 hover:text-blue-800 hover:underline transition-all duration-200"
-                              >
-                                {worker.guarantorName}
-                              </button>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{formatPhone(worker.guarantorPhone)}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                              <button
-                                onClick={() => navigate(`/worker-details/${worker.residenceNumber}`)}
-                                className="flex items-center gap-1 px-3 py-1 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-all duration-200 text-xs"
-                                title="عرض تفاصيل العامل"
-                              >
-                                <ExternalLink className="h-3 w-3" />
-                                عرض البيانات
-                              </button>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
+                  <div className="overflow-x-auto rounded-lg">
+                    <table className="min-w-full bg-white border border-gray-200 rounded-lg">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">اسم العميل</th>
+                          <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">رقم الجوال</th>
+                          <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">رقم الإقامة</th>
+                          <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">تاريخ انتهاء الإقامة</th>
+                          <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">حالة الإقامة</th>
+                          <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">المبلغ</th>
+                          <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">اسم الكفيل</th>
+                          <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">رقم حوال الكفيل</th>
+                          <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الإجراءات</th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {paginatedData.map((worker: any, index: number) => {
+                          const residenceStatus = getResidenceStatus(worker.residenceEndDate);
+                          return (
+                            <tr key={worker._id || index} className={`hover:bg-gray-50 ${residenceStatus.bgColor}`}>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                <button
+                                  onClick={() => navigate(`/worker-details/${worker.residenceNumber}`)}
+                                  className="text-purple-600 hover:text-purple-800 hover:underline transition-all duration-200"
+                                >
+                                  {worker.fullName}
+                                </button>
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{formatPhone(worker.phone)}</td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{worker.residenceNumber}</td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{formatDate(worker.residenceEndDate)}</td>
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${residenceStatus.color}`}>
+                                  {residenceStatus.status}
+                                </span>
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{worker.price} ريال</td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                <button
+                                  onClick={() => navigate(`/guarantor-details/${worker.guarantorCardNumber}`)}
+                                  className="text-blue-600 hover:text-blue-800 hover:underline transition-all duration-200"
+                                >
+                                  {worker.guarantorName}
+                                </button>
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{formatPhone(worker.guarantorPhone)}</td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                <button
+                                  onClick={() => navigate(`/worker-details/${worker.residenceNumber}`)}
+                                  className="flex items-center gap-1 px-3 py-1 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-all duration-200 text-xs"
+                                  title="عرض تفاصيل العامل"
+                                >
+                                  <ExternalLink className="h-3 w-3" />
+                                  عرض البيانات
+                                </button>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
                   <Pagination />
                 </>
               ) : (
                 // Guarantors Table
                 <>
-                  <table className="min-w-full bg-white border border-gray-200 rounded-lg">
-                    <thead className="bg-gray-50">
-                      <tr>
-                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">اسم الكفيل</th>
-                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">رقم الجوال</th>
-                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">رقم البطاقة</th>
-                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">عدد العملاء</th>
-                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">تاريخ الإنشاء</th>
-                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الإجراءات</th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                      {paginatedData.map((item: any, index: number) => {
-                        if (!('cardNumber' in item)) return null;
-                        const guarantor = item as Guarantor;
-                        return (
-                          <tr key={guarantor._id || index} className="hover:bg-gray-50">
-                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                              <button
-                                onClick={() => navigate(`/guarantor-details/${guarantor.cardNumber}`)}
-                                className="text-blue-600 hover:text-blue-800 hover:underline transition-all duration-200"
-                              >
-                                {guarantor.fullName}
-                              </button>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{formatPhone(guarantor.phone)}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{guarantor.cardNumber}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{guarantor.workers?.length || 0}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{guarantor.createdAt ? formatDate(guarantor.createdAt) : '-'}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                              <button
-                                onClick={() => navigate(`/guarantor-details/${guarantor.cardNumber}`)}
-                                className="flex items-center gap-1 px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 text-xs"
-                              >
-                                <ExternalLink className="h-3 w-3" />
-                                عرض البيانات
-                              </button>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
+                  <div className="overflow-x-auto rounded-lg">
+                    <table className="min-w-full bg-white border border-gray-200 rounded-lg">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">اسم الكفيل</th>
+                          <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">رقم الجوال</th>
+                          <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">رقم البطاقة</th>
+                          <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">عدد العملاء</th>
+                          <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">تاريخ الإنشاء</th>
+                          <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الإجراءات</th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {paginatedData.map((item: any, index: number) => {
+                          if (!('cardNumber' in item)) return null;
+                          const guarantor = item as Guarantor;
+                          return (
+                            <tr key={guarantor._id || index} className="hover:bg-gray-50">
+                              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                <button
+                                  onClick={() => navigate(`/guarantor-details/${guarantor.cardNumber}`)}
+                                  className="text-blue-600 hover:text-blue-800 hover:underline transition-all duration-200"
+                                >
+                                  {guarantor.fullName}
+                                </button>
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{formatPhone(guarantor.phone)}</td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{guarantor.cardNumber}</td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{guarantor.workers?.length || 0}</td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{guarantor.createdAt ? formatDate(guarantor.createdAt) : '-'}</td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                <button
+                                  onClick={() => navigate(`/guarantor-details/${guarantor.cardNumber}`)}
+                                  className="flex items-center gap-1 px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 text-xs"
+                                >
+                                  <ExternalLink className="h-3 w-3" />
+                                  عرض البيانات
+                                </button>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
                   <Pagination />
                 </>
               )}

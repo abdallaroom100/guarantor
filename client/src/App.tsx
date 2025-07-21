@@ -16,6 +16,7 @@ import { WorkerDetailsPage, GuarantorDetailsPage } from "./pages/beneficiaryDeta
 import RecordsPage from "./pages/RecordsPage";
 import WorkersDetailsPage from "./pages/WorkersDetailsPage";
 import EditGuarantorPage from "./pages/EditGuarantorPage";
+import EditSingleAgentPage from "./pages/EditSingleAgentPage";
 import { MoonLoader } from "react-spinners";
 import { DashboardProvider } from "./contexts/DashboardContext";
 
@@ -48,6 +49,7 @@ function App() {
               <Route path="/workers-details" element={<WorkersDetailsPage />} />
               <Route path="/worker-details/:residenceNumber" element={<WorkerDetailsPage />} />
               <Route path="/edit-guarantor/:cardNumber" element={<EditGuarantorPage />} />
+              <Route path="/edit-agent/:cardNumber" element={<EditSingleAgentPage />} />
             </Route>
           </Routes>
         </Suspense>

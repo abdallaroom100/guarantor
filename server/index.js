@@ -6,6 +6,8 @@ import cookieParser from "cookie-parser"
 import path from "path"
 import userRouter from "./routers/user.router.js"
 import adminRouter from "./routers/admin.router.js"
+import agentRouter from "./routers/agent.router.js"
+
 import { fileURLToPath } from "url"
 
 // Middlewares
@@ -24,6 +26,7 @@ app.use(cookieParser())
 
 app.use("/guarantor", userRouter);
 app.use("/admin",adminRouter)
+app.use("/agent",agentRouter)
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 // Ensure __dirname and path are available

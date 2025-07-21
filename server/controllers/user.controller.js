@@ -31,10 +31,10 @@ export const createGuarantor = async (req, res) => {
     if (fullName.length < 2) {
       return res.status(400).json({ error: "برجاء ادخال بيانات الاسم صحيحة" });
     }
-    if (String(phone).length != 9) {
+    if (String(phone).length != 10) {
       return res
         .status(400)
-        .json({ error: "رقم الهاتف يجب ان يحتوي علي 9 ارقام" });
+        .json({ error: "رقم الهاتف يجب ان يحتوي علي 10 ارقام" });
     }
     if (String(cardNumber).length != 10) {
       return res  
@@ -72,10 +72,10 @@ export const createGuarantor = async (req, res) => {
           .status(400)
           .json({ error: `برجاء ادخال بيانات الاسم صحيحة للعامل رقم ${i + 1}` });
       }
-      if (String(worker.phone).length != 9) {
+      if (String(worker.phone).length != 10) {
         return res
           .status(400)
-          .json({ error: `برجاء ادخال رقم هاتف مكون من 9 ارقام للعامل رقم ${i + 1}` });
+          .json({ error: `برجاء ادخال رقم هاتف مكون من 10 ارقام للعامل رقم ${i + 1}` });
       }
       if (String(worker.residenceNumber)?.length != 10) {
         return res 
@@ -120,14 +120,14 @@ export const createGuarantor = async (req, res) => {
 
 
 export const updateGuarantor = async (req, res) => {
-  const { cardNumber } = req.params;
-  const { fullName, phone, workers, birthDate } = req.body;
+  const { cardNumber: cardId } = req.params;
+  const { fullName, phone, workers,cardNumber, birthDate } = req.body;
 
   try {
     if (!fullName || !phone || !cardNumber || !workers?.length || !birthDate) {
       return res.status(400).json({ error: "برجاء ملئ جميع الحقول المطلوبة بما فيها تاريخ الميلاد للكفيل" });
     }
-    const guarantor = await User.findOne({ cardNumber });
+    const guarantor = await User.findOne({ cardNumber: cardId });
 
     if (!guarantor) {
       return res.status(404).json({ error: "لم يتم العثور على الكفيل" });
@@ -149,8 +149,8 @@ export const updateGuarantor = async (req, res) => {
     }
 
     if (phone) {
-      if (!/^\d{9}$/.test(phone)) {
-        return res.status(400).json({ error: "رقم الهاتف يجب أن يحتوي على 9 أرقام" });
+      if (!/^\d{10}$/.test(phone)) {
+        return res.status(400).json({ error: "رقم الهاتف يجب أن يحتوي على 10 أرقام" });
       }
       guarantor.phone = phone;
     }
@@ -185,8 +185,8 @@ export const updateGuarantor = async (req, res) => {
           return res.status(400).json({ error: `اسم العامل رقم ${i + 1} غير صالح` });
         }
 
-        if (!/^\d{9}$/.test(worker.phone)) {
-          return res.status(400).json({ error: `رقم هاتف العامل رقم ${i + 1} يجب أن يكون 9 أرقام` });
+        if (!/^\d{10}$/.test(worker.phone)) {
+          return res.status(400).json({ error: `رقم هاتف العامل رقم ${i + 1} يجب أن يكون 10 أرقام` });
         }
 
         if (!/^\d{10}$/.test(worker.residenceNumber)) {
@@ -198,11 +198,11 @@ export const updateGuarantor = async (req, res) => {
         }
 
    
-        if (worker.price !== undefined && typeof worker.price !== "number") {
+        if (worker.price !== undefined && typeof Number(worker.price) !== "number") {
           return res.status(400).json({ error: `السعر يجب أن يكون رقمًا للعامل رقم ${i + 1}` });
         }
 
-        
+
         if (worker.notice !== undefined && typeof worker.notice !== "string") {
           return res.status(400).json({ error: `الملاحظة يجب أن تكون نصًا للعامل رقم ${i + 1}` });
         }
@@ -248,9 +248,8 @@ export const updateGuarantor = async (req, res) => {
       // استبدال العمال بالكامل
       guarantor.workers = workers;
     }
-
-    console.log(req.body)
-    await guarantor.save(); 
+  await guarantor.save()
+   
     return res.status(200).json(guarantor);
 
   } catch (error) {
@@ -259,9 +258,24 @@ export const updateGuarantor = async (req, res) => {
   }
 };
 
-
+export const deleteGuarantorTemporary = async (req,res) =>{
+  try {
+    const {cardId} = req.params
+     const guarantor = await User.findOne({cardNumber:cardId})
+     if(!guarantor){
+      return res.status(400).json({error:"بيانات الكفيل هذه غير موجوده"})
+     }
+      guarantor.isDeleted = true
+      await guarantor.save()
+      return res.status(200).json({message:"تم حذف الكفيل بنجاح"})
+  } catch (error) {
+    console.log(`error in get current user function`);
+    console.log(error.message);
+    return res.status(500).json({error:error.message})
+  }
+}
 export const getWorkerWithGuarantor = async (req,res) =>{
-
+ 
    const {residenceNumber} = req.params
   try {
     const guarantor = await User.find({"workers.residenceNumber":residenceNumber})
