@@ -127,7 +127,7 @@ const GuarantorDetailsPage: React.FC = () => {
                       <Phone className="h-4 w-4 text-gray-500" />
                       <span className="text-sm text-gray-500">رقم الجوال</span>
                     </div>
-                    <p className="text-lg font-semibold text-gray-800">{formatPhone(guarantor.phone)}</p>
+                    <p className="text-lg font-semibold text-gray-800">{guarantor.phone}</p>
                   </div>
                   
                   <div className="bg-white p-4 rounded-lg border border-gray-200">
@@ -187,7 +187,7 @@ const GuarantorDetailsPage: React.FC = () => {
                           return (
                             <tr key={worker._id || index} className={`hover:bg-gray-50 ${residenceStatus.bgColor}`}>
                               <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{worker.fullName}</td>
-                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{formatPhone(worker.phone)}</td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{worker.phone}</td>
                               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{worker.residenceNumber}</td>
                               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{formatDate(worker.residenceEndDate)}</td>
                               <td className="px-6 py-4 whitespace-nowrap">

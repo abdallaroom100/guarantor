@@ -128,7 +128,7 @@ const WorkerDetailsPage: React.FC = () => {
                       <Phone className="h-4 w-4 text-gray-500" />
                       <span className="text-sm text-gray-500">رقم الجوال</span>
                     </div>
-                    <p className="text-lg font-semibold text-gray-800">{formatPhone(data.worker.phone)}</p>
+                    <p className="text-lg font-semibold text-gray-800">{data.worker.phone}</p>
                   </div>
                   
                   <div className="bg-white p-4 rounded-lg border border-gray-200">
@@ -198,7 +198,7 @@ const WorkerDetailsPage: React.FC = () => {
                       <Phone className="h-4 w-4 text-gray-500" />
                       <span className="text-sm text-gray-500">رقم الجوال</span>
                     </div>
-                    <p className="text-lg font-semibold text-gray-800">{formatPhone(data.guarantor.phone)}</p>
+                    <p className="text-lg font-semibold text-gray-800">{data.guarantor.phone}</p>
                   </div>
                   
                   <div className="bg-white p-4 rounded-lg border border-gray-200">

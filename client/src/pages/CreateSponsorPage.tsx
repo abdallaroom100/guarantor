@@ -60,7 +60,7 @@ const CreateSponsorPage: React.FC = () => {
       // تحويل تواريخ انتهاء الإقامة وتواريخ الميلاد
       const employeesWithFormattedDates = employees.map(emp => ({
         fullName: emp.name,
-        phone: parseInt(emp.phone) || 0,
+        phone: emp.phone || 0,
         residenceNumber: parseInt(emp.residency) || 0,
         residenceEndDate: emp.expiryYear && emp.expiryMonth && emp.expiryDay 
           ? `${emp.expiryYear}-${emp.expiryMonth.padStart(2, '0')}-${emp.expiryDay.padStart(2, '0')}`
@@ -74,7 +74,7 @@ const CreateSponsorPage: React.FC = () => {
       // تجهيز البيانات بالشكل المطلوب
       const formData = {
         fullName: sponsor.name,
-        phone: parseInt(sponsor.phone) || 0,
+        phone: sponsor.phone || 0,
         cardNumber: parseInt(sponsor.id) || 0,
         birthDate: sponsor.birthYear && sponsor.birthMonth && sponsor.birthDay
           ? `${sponsor.birthYear}-${sponsor.birthMonth.padStart(2, '0')}-${sponsor.birthDay.padStart(2, '0')}`

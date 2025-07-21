@@ -13,6 +13,7 @@ interface Worker {
   price: number;
   notice?: string;
   paysHistory?: Record<string, number[]>;
+  birthDate?: string; // Added birthDate to Worker interface
 }
 
 interface Guarantor {
@@ -22,6 +23,7 @@ interface Guarantor {
   cardNumber: number;
   workers: Worker[];
   createdAt?: string;
+  birthDate?: string; // Added birthDate to Guarantor interface
 }
 
 const GuarantorDetailsPage: React.FC = () => {
@@ -191,13 +193,21 @@ const GuarantorDetailsPage: React.FC = () => {
                 </div>
                 <p className="text-lg font-semibold text-gray-800">{guarantor.fullName}</p>
               </div>
+              {/* تاريخ ميلاد الكفيل */}
+              <div className="bg-white p-4 rounded-lg border border-gray-200">
+                <div className="flex items-center gap-2 mb-2">
+                  <Calendar className="h-4 w-4 text-orange-500" />
+                  <span className="text-sm text-gray-500">تاريخ ميلاد الكفيل</span>
+                </div>
+                <p className="text-lg font-semibold text-gray-800">{guarantor.birthDate ? formatDate(String(guarantor.birthDate)) : '-'}</p>
+              </div>
               
               <div className="bg-white p-4 rounded-lg border border-gray-200">
                 <div className="flex items-center gap-2 mb-2">
                   <Phone className="h-4 w-4 text-green-500" />
                   <span className="text-sm text-gray-500">رقم الجوال</span>
                 </div>
-                <p className="text-lg font-semibold text-gray-800">{formatPhone(guarantor.phone)}</p>
+                <p className="text-lg font-semibold text-gray-800">{guarantor.phone}</p>
               </div>
               
               <div className="bg-white p-4 rounded-lg border border-gray-200">
@@ -274,10 +284,15 @@ const GuarantorDetailsPage: React.FC = () => {
                           <label className="block text-sm font-medium text-gray-700 mb-1">اسم العامل</label>
                           <p className="text-lg font-semibold text-gray-800">{worker.fullName}</p>
                         </div>
+                        {/* تاريخ ميلاد العامل */}
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">تاريخ ميلاد العامل</label>
+                          <p className="text-lg font-semibold text-gray-800">{worker.birthDate ? formatDate(String(worker.birthDate)) : '-'}</p>
+                        </div>
                         
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">رقم الجوال</label>
-                          <p className="text-lg font-semibold text-gray-800">{formatPhone(worker.phone)}</p>
+                          <p className="text-lg font-semibold text-gray-800">{worker.phone}</p>
                         </div>
                         
                         <div>
