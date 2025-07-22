@@ -4,6 +4,7 @@ import generateToken from "../utils/generateToken.js";
 import bcrypt from "bcryptjs";
 import addMonths from "../helper/addMonth.js";
 
+
 export const getCurrentUser = async (req, res) => {
   try {
     if (!mongoose.Types.ObjectId.isValid(req?.userId)) {
@@ -17,7 +18,7 @@ export const getCurrentUser = async (req, res) => {
     console.log(error.message);
   }
 };
-
+ 
 export const createGuarantor = async (req, res) => {
   const { fullName, phone, cardNumber, price, workers, birthDate } = req.body;
   console.log(req.body)
@@ -47,7 +48,7 @@ export const createGuarantor = async (req, res) => {
     if(Number(price) && price <=0){
       return res.status(400).json({error:"السعر يجب ان يكون رقم صحيح"})
     }
-
+ 
     for (let i = 0; i < workers.length; i++) {
       const worker = workers[i];
     
@@ -260,8 +261,8 @@ export const updateGuarantor = async (req, res) => {
 
 export const deleteGuarantorTemporary = async (req,res) =>{
   try {
-    const {cardId} = req.params
-     const guarantor = await User.findOne({cardNumber:cardId})
+    const {id} = req.params
+     const guarantor = await User.findById(id)
      if(!guarantor){
       return res.status(400).json({error:"بيانات الكفيل هذه غير موجوده"})
      }
@@ -274,6 +275,33 @@ export const deleteGuarantorTemporary = async (req,res) =>{
     return res.status(500).json({error:error.message})
   }
 }
+export const returnGuarantorFromTemp = async (req,res) =>{
+  try {
+    const {id} = req.params
+     const guarantor = await User.findById(id)
+     if(!guarantor){
+      return res.status(400).json({error:"بيانات الكفيل هذه غير موجوده"})
+     }
+      guarantor.isDeleted = false
+      await guarantor.save()
+      return res.status(200).json({message:"تم حذف الكفيل بنجاح"})
+  } catch (error) {
+    console.log(`error in get current user function`);
+    console.log(error.message);
+    return res.status(500).json({error:error.message})
+  }
+}
+
+export const getTempGuarantors = async (req,res) =>{
+  try {
+      const agents  = await User.find({isDeleted:true}).sort({createdAt:-1})
+      return res.status(200).json(agents)
+  } catch (error) {
+      console.log(error)
+      return res.status(500).json({error:error.message})
+  }
+}
+
 export const getWorkerWithGuarantor = async (req,res) =>{
  
    const {residenceNumber} = req.params
@@ -298,7 +326,8 @@ export const getWorkerWithGuarantor = async (req,res) =>{
  export const getAllGuarantors = async (req,res) =>{
 
   try {
-      const guarnators = await User.find({}).sort({createdAt:-1})
+      const guarnators = await User.find({isDeleted:false}).sort({createdAt:-1})
+    
       return res.status(200).json(guarnators)
   } catch (error) {
     console.log(error.message)
@@ -306,7 +335,7 @@ export const getWorkerWithGuarantor = async (req,res) =>{
     return res.status(500).json({error:error.message})
   }
  }
- export const getGuarantor = async (req,res) =>{
+ export const getGuarantor = async (req,res) =>{ 
    try { 
     const {cardId} = req.params
       const guarantor = await User.findOne({cardNumber:cardId})

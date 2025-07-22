@@ -21,6 +21,9 @@ export const createAgent = async (req, res) => {
           error: "برجاء ملئ جميع الحقول المطلوبة ",
         });
     }
+    if (!['زيارة', 'عمرة', 'عمل'].includes(visaType)) {
+      return res.status(400).json({ error: 'نوع التأشيرة غير صحيح يجب أن يكون زيارة أو عمرة أو عمل' });
+    }
     if (!/^[\d]{4}-[\d]{2}-[\d]{2}$/.test(birthDate)) {
       return res
         .status(400)
@@ -69,7 +72,7 @@ export const createAgent = async (req, res) => {
 
  export const getAgents = async (req,res) =>{
     try {
-        const agents  = await Agent.find({}).sort({createdAt:-1})
+        const agents  = await Agent.find({isDeleted:false}).sort({createdAt:-1})
         return res.status(200).json(agents)
     } catch (error) {
         
@@ -82,7 +85,7 @@ export const createAgent = async (req, res) => {
         if(!agent){
             return res.status(400).json({error:"بيانات الوكيل غير موجوده"})
         }
-        return res.status(200).json(agent)
+        return res.status(200).json(agent) 
     } catch (error) {
         return res.status(500).json({error: error.message})
     }
@@ -117,6 +120,9 @@ export const updateAgent = async (req, res) => {
         .json({
           error: "برجاء ملئ جميع الحقول المطلوبة بما فيها تاريخ الميلاد ونوع التأشيرة",
         });
+    }
+    if (!['زيارة', 'عمرة', 'عمل'].includes(visaType)) {
+      return res.status(400).json({ error: 'نوع التأشيرة غير صحيح يجب أن يكون زيارة أو عمرة أو عمل' });
     }
     const agent = await Agent.findById(id);
 
@@ -174,8 +180,8 @@ export const updateAgent = async (req, res) => {
 
 export const deleteAgentTemporary = async (req, res) => {
   try {
-    const { cardId } = req.params;
-    const agent = await Agent.findOne({ cardNumber: cardId });
+    const { id } = req.params;
+    const agent = await Agent.findById(id);
     if (!agent) {
       return res.status(400).json({ error: "بيانات الكفيل هذه غير موجوده" });
     }
@@ -188,3 +194,31 @@ export const deleteAgentTemporary = async (req, res) => {
     return res.status(500).json({ error: error.message });
   }
 };
+
+export const returnAgentfromTemp = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const agent = await Agent.findById(id);
+    if (!agent) {
+      return res.status(400).json({ error: "بيانات الكفيل هذه غير موجوده" });
+    }
+    agent.isDeleted = false;
+    await agent.save();
+    return res.status(200).json({ message: "تم حذف الكفيل بنجاح" });
+  } catch (error) {
+    console.log(`error in get delete agent temporary function`);
+    console.log(error.message);
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+
+
+export const getTempAgents = async (req,res) =>{
+  try {
+      const agents  = await Agent.find({isDeleted:true}).sort({createdAt:-1})
+      return res.status(200).json(agents)
+  } catch (error) {
+      
+  }
+}

@@ -24,7 +24,7 @@ app.use(cors({
 
 app.use(cookieParser())
 
-app.use("/guarantor", userRouter);
+app.use("/guarantor", userRouter); 
 app.use("/admin",adminRouter)
 app.use("/agent",agentRouter)
 const __filename = fileURLToPath(import.meta.url);

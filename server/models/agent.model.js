@@ -44,7 +44,7 @@ const agentSchema = new Schema({
     },
     visaType: {
         type: String,
-        enum: ['أحادية', 'متعددة'],
+        enum: ['زيارة', 'عمرة', 'عمل'],
         required: true
     }
   
