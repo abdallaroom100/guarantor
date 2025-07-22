@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, User, Phone, CreditCard, Calendar, Users, DollarSign, FileText, Edit, Trash2, Plus } from 'lucide-react';
 import hotToast from '../../common/hotToast';
 import { useGetGuarantor } from '../Dashboard/hooks/bag/useGetGuarantor';
+import moment from 'moment-hijri';
 
 interface Worker {
   _id: string;
@@ -40,7 +41,7 @@ const GuarantorDetailsPage: React.FC = () => {
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     // صيغة اليوم/الشهر/السنة بالميلادي
-    return date.toLocaleDateString('ar-EG', { year: 'numeric', month: '2-digit', day: '2-digit' });
+    return date.toLocaleDateString('ar-us', { year: 'numeric', month: '2-digit', day: '2-digit' });
   };
 
   const formatPhone = (phone: number) => {
@@ -115,6 +116,18 @@ const GuarantorDetailsPage: React.FC = () => {
     const status = getResidenceStatus(worker.residenceEndDate);
     return status.status === 'منتهية';
   }).length || 0;
+
+  const hijriMonths = [
+    'محرم', 'صفر', 'ربيع الأول', 'ربيع الآخر', 'جمادى الأولى', 'جمادى الآخرة',
+    'رجب', 'شعبان', 'رمضان', 'شوال', 'ذو القعدة', 'ذو الحجة'
+  ];
+  function formatHijriDate(dateString: string) {
+    if (!dateString) return '';
+    const m = moment(dateString, 'YYYY-MM-DD').format('iYYYY-iMM-iDD');
+    const [year, month, day] = m.split('-');
+    const monthName = hijriMonths[parseInt(month, 10) - 1] || '';
+    return `${day} ${monthName} ${year} هـ`;
+  }
 
   if (loading) {
     return (
@@ -199,7 +212,7 @@ const GuarantorDetailsPage: React.FC = () => {
                   <Calendar className="h-4 w-4 text-orange-500" />
                   <span className="text-sm text-gray-500">تاريخ ميلاد الكفيل</span>
                 </div>
-                <p className="text-lg font-semibold text-gray-800">{guarantor.birthDate ? formatDate(String(guarantor.birthDate)) : '-'}</p>
+                <p className="text-lg font-semibold text-gray-800">{guarantor.birthDate ? String(guarantor.birthDate) : '-'}</p>
               </div>
               
               <div className="bg-white p-4 rounded-lg border border-gray-200">
@@ -223,7 +236,7 @@ const GuarantorDetailsPage: React.FC = () => {
                   <Calendar className="h-4 w-4 text-orange-500" />
                   <span className="text-sm text-gray-500">تاريخ الإنشاء</span>
                 </div>
-                <p className="text-lg font-semibold text-gray-800">{guarantor.createdAt ? formatDate(guarantor.createdAt) : '-'}</p>
+                <p className="text-lg font-semibold text-gray-800">{guarantor.createdAt ? formatDate(guarantor.createdAt).split("/").join("-") : '-'}</p>
               </div>
             </div>
           </div>
@@ -287,7 +300,7 @@ const GuarantorDetailsPage: React.FC = () => {
                         {/* تاريخ ميلاد العامل */}
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">تاريخ ميلاد العامل</label>
-                          <p className="text-lg font-semibold text-gray-800">{worker.birthDate ? formatDate(String(worker.birthDate)) : '-'}</p>
+                          <p className="text-lg font-semibold text-gray-800">{worker.birthDate ? String(worker.birthDate) : '-'}</p>
                         </div>
                         
                         <div>
@@ -309,7 +322,7 @@ const GuarantorDetailsPage: React.FC = () => {
                       <div className="grid md:grid-cols-2 gap-4 mb-4">
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">تاريخ انتهاء الإقامة</label>
-                          <p className="text-lg font-semibold text-gray-800">{formatDate(worker.residenceEndDate)}</p>
+                          <p className="text-lg font-semibold text-gray-800">{formatHijriDate(worker.residenceEndDate)}</p>
                         </div>
                         
                         <div>

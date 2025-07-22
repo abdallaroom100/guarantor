@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, User, Phone, CreditCard, FileText, X } from 'lucide-react';
 import { useCreateGuarantor } from './Dashboard/hooks/bag/useCreateGuarantor';
+// @ts-ignore
+import HijriDate from 'hijri-date';
 
 interface Employee {
   name: string;
@@ -15,8 +17,46 @@ interface Employee {
   birthDay: string;
 }
 
+// قائمة الأشهر الهجرية
+const hijriMonths = [
+  'محرم', 'صفر', 'ربيع الأول', 'ربيع الآخر', 'جمادى الأولى', 'جمادى الآخرة',
+  'رجب', 'شعبان', 'رمضان', 'شوال', 'ذو القعدة', 'ذو الحجة'
+];
+
+// دالة تحويل هجري إلى ميلادي (yyyy-mm-dd)
+function hijriToGregorian(year: string, monthName: string, day: string) {
+  let monthIndex = hijriMonths.indexOf(monthName);
+  if (monthIndex === -1) monthIndex = 0;
+  try {
+    const hijriDate = new HijriDate(Number(year), monthIndex, Number(day));
+    console.log('HijriDate object:', hijriDate);
+
+    // استخدم __proxy__ إذا كان متاحًا
+    if (hijriDate.__proxy__ instanceof Date) {
+      const gDate = hijriDate.__proxy__;
+      const gYear = gDate.getFullYear();
+      const gMonth = gDate.getMonth() + 2;
+      const gDay = gDate.getDate() ;
+      const result = `${gYear}-${String(gMonth).padStart(2, '0')}-${String(gDay).padStart(2, '0')}`;
+      console.log('Gregorian result (from __proxy__):', result);
+      return result;
+    } else if (typeof hijriDate.toGregorian === 'function') {
+      const g = hijriDate.toGregorian();
+      const result = `${g.gy}-${String(g.gm).padStart(2, '0')}-${String(g.gd).padStart(2, '0')}`;
+      console.log('Gregorian result (from toGregorian):', result);
+      return result;
+    } else {
+      console.log('No valid conversion method found');
+      return '';
+    }
+  } catch (e) {
+    console.log('Hijri to Gregorian conversion error:', e);
+    return '';
+  }
+}
+
 const CreateSponsorPage: React.FC = () => {
-  const { createGuarantor, loading, error, isCreated } = useCreateGuarantor();
+  const { createGuarantor, loading, error, isCreated, setIsCreated } = useCreateGuarantor();
   // تحديث حالة الكفيل لتشمل تاريخ الميلاد
   const [sponsor, setSponsor] = useState({ name: '', phone: '', id: '', birthYear: '', birthMonth: '', birthDay: '' });
   const [employees, setEmployees] = useState<Employee[]>([
@@ -34,6 +74,7 @@ const CreateSponsorPage: React.FC = () => {
   useEffect(() => {
     if (isCreated) {
       resetForm();
+      setIsCreated(false); // إعادة تعيين الفلاج بعد التفريغ
     }
   }, [isCreated]);
 
@@ -58,18 +99,21 @@ const CreateSponsorPage: React.FC = () => {
   const handleSubmit = async () => {
     try {
       // تحويل تواريخ انتهاء الإقامة وتواريخ الميلاد
-      const employeesWithFormattedDates = employees.map(emp => ({
-        fullName: emp.name,
-        phone: emp.phone || 0,
-        residenceNumber: parseInt(emp.residency) || 0,
-        residenceEndDate: emp.expiryYear && emp.expiryMonth && emp.expiryDay 
-          ? `${emp.expiryYear}-${emp.expiryMonth.padStart(2, '0')}-${emp.expiryDay.padStart(2, '0')}`
-          : '',
-        birthDate: emp.birthYear && emp.birthMonth && emp.birthDay
-          ? `${emp.birthYear}-${emp.birthMonth.padStart(2, '0')}-${emp.birthDay.padStart(2, '0')}`
-          : '',
-        price: parseInt(emp.amount) || 0
-      }));
+      const employeesWithFormattedDates = employees.map(emp => {
+        console.log('expiryYear:', emp.expiryYear, 'expiryMonth:', emp.expiryMonth, 'expiryDay:', emp.expiryDay);
+        return {
+          fullName: emp.name,
+          phone: emp.phone || 0,
+          residenceNumber: parseInt(emp.residency) || 0,
+          residenceEndDate: emp.expiryYear && emp.expiryMonth && emp.expiryDay 
+            ? hijriToGregorian(emp.expiryYear, emp.expiryMonth, emp.expiryDay)
+            : '',
+          birthDate: emp.birthYear && emp.birthMonth && emp.birthDay
+            ? `${emp.birthYear}-${emp.birthMonth.padStart(2, '0')}-${emp.birthDay.padStart(2, '0')}`
+            : '',
+          price: parseInt(emp.amount) || 0
+        }
+      });
       
       // تجهيز البيانات بالشكل المطلوب
       const formData = {
@@ -92,6 +136,10 @@ const CreateSponsorPage: React.FC = () => {
       console.error('خطأ في إرسال البيانات:', error);
     }
   };
+
+  // قائمة السنوات الهجرية من 1445 إلى 1460
+  const hijriStartYear = 1447;
+  const hijriYears = Array.from({ length: 16 }, (_, i) => (hijriStartYear + i).toString());
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 pt-12 md:pt-8" dir="rtl">
@@ -380,6 +428,7 @@ const CreateSponsorPage: React.FC = () => {
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">تاريخ انتهاء الإقامة</label>
                       <div className="w-full flex flex-col gap-1 md:flex-row md:gap-1 items-center overflow-y-auto">
+                        {/* في حقل السنة لتاريخ انتهاء الإقامة */}
                         <div className="relative w-full md:w-fit mb-2">
                           <select
                             name="expiryYear"
@@ -388,7 +437,7 @@ const CreateSponsorPage: React.FC = () => {
                             className="bg-white shadow-sm rounded-lg border-2 border-blue-200 focus:border-blue-500 px-2 py-2 pr-12 text-sm appearance-none transition-all duration-200 hover:border-blue-400"
                           >
                             <option value="">السنة</option>
-                            {Array.from({ length: 15 }, (_, i) => new Date().getFullYear() + i).map(year => (
+                            {hijriYears.map(year => (
                               <option key={year} value={year}>{year}</option>
                             ))}
                           </select>
@@ -396,6 +445,7 @@ const CreateSponsorPage: React.FC = () => {
                             <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" /></svg>
                           </span>
                         </div>
+                        {/* في حقل الشهر لتاريخ انتهاء الإقامة */}
                         <div className="relative w-full md:w-fit mb-2">
                           <select
                             name="expiryMonth"
@@ -404,8 +454,8 @@ const CreateSponsorPage: React.FC = () => {
                             className="bg-white shadow-sm rounded-lg border-2 border-blue-200 focus:border-blue-500 px-2 py-2 pr-12 text-sm appearance-none transition-all duration-200 hover:border-blue-400"
                           >
                             <option value="">الشهر</option>
-                            {Array.from({ length: 12 }, (_, i) => i + 1).map(month => (
-                              <option key={month} value={month.toString().padStart(2, '0')}>{month}</option>
+                            {hijriMonths.map((month, i) => (
+                              <option key={month} value={month}>{month}</option>
                             ))}
                           </select>
                           <span className="pointer-events-none absolute right-3 top-1/2 transform -translate-y-1/2 text-blue-400">
@@ -430,6 +480,14 @@ const CreateSponsorPage: React.FC = () => {
                         </div>
                       </div>
                     </div>
+                  </div>
+                  {/* بعد حقول تاريخ انتهاء الإقامة لكل عامل */}
+                  <div className="mt-2 text-sm font-bold text-blue-700">
+                    {emp.expiryYear && emp.expiryMonth && emp.expiryDay && (
+                      <span>
+                        تاريخ انتهاء الإقامة المختار: {emp.expiryYear}-{emp.expiryMonth}-{emp.expiryDay}
+                      </span>
+                    )}
                   </div>
                 </div>
               ))}

@@ -15,6 +15,8 @@ import CreateSponsorPage from "../CreateSponsorPage";
 import RecordsPage from "../RecordsPage";
 import CreateAgentPage from '../CreateAgentPage';
 import EditAgentPage from '../EditAgentPage';
+import DeletedAgentsPage from "../DeletedAgentsPage";
+import DeletedGuarantorsPage from "../DeletedGuarantorsPage";
 
 const Dashboard = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -71,6 +73,10 @@ const Dashboard = () => {
           setActiveTab("beneficiaries");
           return <BeneficiariesList />;
         }
+      case "deletedAgents":
+        return <DeletedAgentsPage />;
+      case "deletedGuarantors":
+        return <DeletedGuarantorsPage />;
       default:
         return <BeneficiariesList />;
     }
@@ -167,7 +173,7 @@ const Dashboard = () => {
             }`}
             onClick={() => handleTabClick("acceptedRecords")}
           >
-            السجل 
+            السجل (الكفلاء والعمال)
           </button>
 
           {/* Only show Process Flow button if admin.rule === 'manager' */}
@@ -210,6 +216,28 @@ const Dashboard = () => {
                 تعديل  التأشيرات
               </button>
           
+          <button
+            className={`w-full p-3 mb-1 md:px-4 md:py-3 rounded-xl text-lg font-semibold text-right transition-all duration-300 transform hover:scale-105 ${
+              activeTab === "deletedAgents"
+                ? "bg-gradient-to-r from-red-500 to-red-600 text-white shadow-lg shadow-red-500/30"
+                : "text-gray-600 hover:text-gray-800 hover:bg-gray-200 hover:shadow-md"
+            }`}
+            onClick={() => handleTabClick("deletedAgents")}
+          >
+            التأشيرات المحذوفة
+          </button>
+
+          <button
+            className={`w-full p-3 mb-1 md:px-4 md:py-3 rounded-xl text-lg font-semibold text-right transition-all duration-300 transform hover:scale-105 ${
+              activeTab === "deletedGuarantors"
+                ? "bg-gradient-to-r from-red-500 to-red-600 text-white shadow-lg shadow-red-500/30"
+                : "text-gray-600 hover:text-gray-800 hover:bg-gray-200 hover:shadow-md"
+            }`}
+            onClick={() => handleTabClick("deletedGuarantors")}
+          >
+            الكفلاء المحذوفين
+          </button>
+
           <div className="pt-2 space-y-3">
             {/* External Links Section */}
             {/* <div className="border-t border-gray-200 pt-4 ">
@@ -272,7 +300,7 @@ const Dashboard = () => {
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto h-screen">
         <div className="bg-gradient-to-br from-blue-50 to-indigo-100">
-          <div className="w-[97%] max-w-[1400px] mx-auto">
+          <div className="w-[97%] max-w-[1550px] mx-auto">
             {renderContent()}
           </div>
         </div>

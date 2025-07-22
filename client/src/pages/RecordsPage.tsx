@@ -15,14 +15,21 @@ const RecordsPage: React.FC = () => {
 
   // فلترة البيانات حسب البحث برقم الهوية وحالة الإقامة
   const filteredBySearch = (filteredData || []).filter((item: any) => {
-    // فلترة البحث برقم الهوية
     let matchesSearch = false;
     if (filterType === 'workers') {
       const worker = item as Worker & { guarantorName: string; guarantorCardNumber: number };
-      matchesSearch = worker.guarantorCardNumber?.toString().includes(searchTerm);
+      matchesSearch =
+        worker.guarantorCardNumber?.toString().includes(searchTerm) ||
+        worker.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        worker.phone?.toString().includes(searchTerm) ||
+        worker.residenceNumber?.toString().includes(searchTerm) ||
+        worker.guarantorName?.toLowerCase().includes(searchTerm.toLowerCase());
     } else {
       const guarantor = item as Guarantor;
-      matchesSearch = guarantor.cardNumber?.toString().includes(searchTerm);
+      matchesSearch =
+        guarantor.cardNumber?.toString().includes(searchTerm) ||
+        guarantor.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        guarantor.phone?.toString().includes(searchTerm);
     }
 
     // فلترة حالة الإقامة (فقط للعمال)
@@ -312,7 +319,7 @@ const RecordsPage: React.FC = () => {
             <div className="w-64">
               <input
                 type="text"
-                placeholder="البحث برقم الهوية..."
+                placeholder="البحث..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"

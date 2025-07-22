@@ -19,7 +19,9 @@ const EditReports: React.FC = () => {
   };
 
   const filteredGuarantors = guarantors.filter(guarantor => 
-    guarantor.cardNumber?.toString().includes(searchTerm)
+    guarantor.cardNumber?.toString().includes(searchTerm) ||
+    guarantor.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    guarantor.phone?.toString().includes(searchTerm)
   );
 
   // Pagination logic
@@ -62,7 +64,7 @@ const EditReports: React.FC = () => {
                
                 <input
                   type="text"
-                  placeholder="البحث برقم الهوية..."
+                  placeholder="البحث..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm"

@@ -32,6 +32,6 @@ export const useCreateGuarantor = () => {
     }
   };
 
- return {loading,error,isCreated,createGuarantor}
+ return {loading,error,isCreated,createGuarantor,setIsCreated}
 
 };

@@ -4,6 +4,11 @@ import { ArrowLeft, Save, User, Phone, CreditCard, Users, Edit, Trash2, Plus } f
 import { useGetGuarantor } from './Dashboard/hooks/bag/useGetGuarantor';
 import { useUpdateGuarantor } from './Dashboard/hooks/bag/useUpdateGuarantor';
 import hotToast from '../common/hotToast';
+import Modal from '../components/Modal';
+import axios from 'axios';
+// @ts-ignore
+import HijriDate from 'hijri-date';
+import moment from 'moment-hijri';
 
 interface Worker {
   _id: string;
@@ -35,6 +40,48 @@ interface Guarantor {
   workers: Worker[];
 }
 
+// دالة تحويل ميلادي إلى هجري
+function gregorianToHijri(dateString: string) {
+  if (!dateString) return { year: '', month: '', day: '' };
+  const m = moment(dateString, 'YYYY-MM-DD').format('iYYYY-iMM-iDD');
+  const [year, month, day] = m.split('-');
+  const hijriMonths = [
+    'محرم', 'صفر', 'ربيع الأول', 'ربيع الآخر', 'جمادى الأولى', 'جمادى الآخرة',
+    'رجب', 'شعبان', 'رمضان', 'شوال', 'ذو القعدة', 'ذو الحجة'
+  ];
+  const monthName = hijriMonths[parseInt(month, 10) - 1] || '';
+  return { year, month: monthName, day };
+}
+
+// استيراد HijriDate وقائمة hijriMonths كما في صفحة الإنشاء
+const hijriMonths = [
+  'محرم', 'صفر', 'ربيع الأول', 'ربيع الآخر', 'جمادى الأولى', 'جمادى الآخرة',
+  'رجب', 'شعبان', 'رمضان', 'شوال', 'ذو القعدة', 'ذو الحجة'
+];
+function hijriToGregorian(year: string, monthName: string, day: string) {
+  let monthIndex = hijriMonths.indexOf(monthName);
+  if (monthIndex === -1) monthIndex = 0;
+  try {
+    const hijriDate = new HijriDate(Number(year), monthIndex, Number(day));
+    if (hijriDate.__proxy__ instanceof Date) {
+      const gDate = hijriDate.__proxy__;
+      const gYear = gDate.getFullYear();
+      const gMonth = gDate.getMonth() + 2;
+      const gDay = gDate.getDate();
+      const result = `${gYear}-${String(gMonth).padStart(2, '0')}-${String(gDay).padStart(2, '0')}`;
+      return result;
+    } else if (typeof hijriDate.toGregorian === 'function') {
+      const g = hijriDate.toGregorian();
+      const result = `${g.gy}-${String(g.gm).padStart(2, '0')}-${String(g.gd).padStart(2, '0')}`;
+      return result;
+    } else {
+      return '';
+    }
+  } catch (e) {
+    return '';
+  }
+}
+
 const EditGuarantorPage: React.FC = () => {
   const { cardNumber } = useParams<{ cardNumber: string }>();
   const navigate = useNavigate();
@@ -43,6 +90,7 @@ const EditGuarantorPage: React.FC = () => {
 
   // تحديث حالة الكفيل لتشمل تاريخ الميلاد
   const [formData, setFormData] = useState({
+    _id: '', // Add _id to formData
     fullName: '',
     phone: '',
     cardNumber: '',
@@ -68,17 +116,37 @@ const EditGuarantorPage: React.FC = () => {
   const totalPages = Math.ceil(formData.workers.length / itemsPerPage);
   const paginatedWorkers = formData.workers.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [deleteError, setDeleteError] = useState('');
+  const handleDelete = async () => {
+    setDeleteLoading(true);
+    setDeleteError('');
+    try {
+      await axios.post(`/guarantor/temp/${formData._id}`);
+      setDeleteLoading(false);
+      setShowDeleteModal(false);
+      navigate(-1);
+    } catch (err: any) {
+      setDeleteError('حدث خطأ أثناء الحذف');
+      setDeleteLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (guarantor) {
       // تحويل تاريخ انتهاء الإقامة وتاريخ الميلاد إلى حقول منفصلة
       const workersWithExpiryFields = guarantor.workers?.map(worker => {
         let expiryYear = '', expiryMonth = '', expiryDay = '';
         let birthYear = '', birthMonth = '', birthDay = '';
+        
         if (worker.residenceEndDate) {
-          const date = new Date(worker.residenceEndDate);
-          expiryYear = date.getFullYear().toString();
-          expiryMonth = (date.getMonth() + 1).toString().padStart(2, '0');
-          expiryDay = date.getDate().toString().padStart(2, '0');
+          // تحويل ميلادي إلى هجري
+          const hijri = gregorianToHijri(worker.residenceEndDate);
+          expiryYear = hijri.year;
+          expiryMonth = hijri.month;
+          expiryDay = hijri.day;
+        
         }
         if (worker.birthDate) {
           const [y, m, d] = worker.birthDate.split('-');
@@ -107,6 +175,7 @@ const EditGuarantorPage: React.FC = () => {
         birthDay = d || '';
       }
       setFormData({
+        _id: guarantor._id, // Set _id
         fullName: guarantor.fullName || '',
         phone: guarantor.phone?.toString() || '',
         cardNumber: guarantor.cardNumber?.toString() || '',
@@ -265,9 +334,9 @@ const EditGuarantorPage: React.FC = () => {
           ? `${formData.birthYear}-${formData.birthMonth.padStart(2, '0')}-${formData.birthDay.padStart(2, '0')}`
           : '',
         workers: formData.workers.map(worker => {
-          // تجميع تاريخ انتهاء الإقامة وتاريخ الميلاد من الحقول المنفصلة
-          const residenceEndDate = worker.expiryYear && worker.expiryMonth && worker.expiryDay 
-            ? `${worker.expiryYear}-${worker.expiryMonth}-${worker.expiryDay}`
+          // تحويل هجري إلى ميلادي
+          const residenceEndDate = worker.expiryYear && worker.expiryMonth && worker.expiryDay
+            ? hijriToGregorian(worker.expiryYear, worker.expiryMonth, worker.expiryDay)
             : worker.residenceEndDate;
           const birthDate = worker.birthYear && worker.birthMonth && worker.birthDay
             ? `${worker.birthYear}-${worker.birthMonth.padStart(2, '0')}-${worker.birthDay.padStart(2, '0')}`
@@ -325,6 +394,10 @@ const EditGuarantorPage: React.FC = () => {
   }
 
   const arabicMonths = ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"];
+
+  // قائمة الأشهر الهجرية
+  const hijriStartYear = 1447;
+  const hijriYears = Array.from({ length: 16 }, (_, i) => (hijriStartYear + i).toString());
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 pt-8" dir="rtl">
@@ -543,7 +616,7 @@ const EditGuarantorPage: React.FC = () => {
                           className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         >
                           <option value="">السنة</option>
-                          {Array.from({ length: 15 }, (_, i) => new Date().getFullYear() + i).map(year => (
+                          {hijriYears.map(year => (
                             <option key={year} value={year}>{year}</option>
                           ))}
                         </select>
@@ -553,8 +626,8 @@ const EditGuarantorPage: React.FC = () => {
                           className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         >
                           <option value="">الشهر</option>
-                          {Array.from({ length: 12 }, (_, i) => i + 1).map(month => (
-                            <option key={month} value={month.toString().padStart(2, '0')}>{month}</option>
+                          {hijriMonths.map((month, i) => (
+                            <option key={month} value={month}>{month}</option>
                           ))}
                         </select>
                         <select
@@ -730,7 +803,7 @@ const EditGuarantorPage: React.FC = () => {
           )}
 
           {/* Submit Button */}
-          <div className="flex justify-center">
+          <div className="flex justify-center mt-8">
             <button
               onClick={handleSubmit}
               disabled={updateLoading}
@@ -742,6 +815,14 @@ const EditGuarantorPage: React.FC = () => {
             >
               <Save className="h-5 w-5" />
               {updateLoading ? 'جاري الحفظ...' : 'حفظ التعديلات'}
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowDeleteModal(true)}
+              className="ml-4 flex items-center gap-2 px-8 py-3 rounded-xl mr-4 font-semibold text-lg bg-gradient-to-r from-red-600 to-pink-600 text-white hover:from-red-700 hover:to-pink-700 transition-all duration-200"
+            >
+              <Trash2 className="h-5 w-5" />
+              حذف الكفيل
             </button>
           </div>
 
@@ -755,6 +836,19 @@ const EditGuarantorPage: React.FC = () => {
           )}
         </div>
       </div>
+      <Modal isOpen={showDeleteModal} onClose={() => setShowDeleteModal(false)}>
+        <div className="text-center">
+          <div className="mb-4 text-2xl font-bold text-gray-800">تأكيد حذف الكفيل</div>
+          <div className="mb-6 text-gray-600">هل أنت متأكد أنك تريد حذف هذا الكفيل؟ لا يمكن التراجع عن هذا الإجراء.</div>
+          <div className="flex justify-center gap-4">
+            <button onClick={handleDelete} disabled={deleteLoading} className="px-6 py-2 rounded-lg bg-gradient-to-r from-red-600 to-pink-600 text-white font-bold hover:from-red-700 hover:to-pink-700 transition">
+              {deleteLoading ? 'جاري الحذف...' : 'تأكيد الحذف'}
+            </button>
+            <button onClick={() => setShowDeleteModal(false)} className="px-6 py-2 rounded-lg bg-gray-200 text-gray-700 font-bold hover:bg-gray-300 transition">إلغاء</button>
+          </div>
+          {deleteError && <div className="text-red-600 mt-4 font-bold">{deleteError}</div>}
+        </div>
+      </Modal>
     </div>
   );
 };

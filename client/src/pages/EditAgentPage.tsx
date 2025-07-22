@@ -14,7 +14,9 @@ const EditAgentPage: React.FC = () => {
   const navigate = useNavigate();
 
   const filteredAgents = Array.isArray(agents) ? agents.filter(agent =>
-    String(agent.cardNumber || '').includes(search)
+    String(agent.cardNumber || '').includes(search) ||
+    String(agent.fullName || '').toLowerCase().includes(search.toLowerCase()) ||
+    String(agent.phone || '').includes(search)
   ) : [];
 
   // Pagination state
@@ -110,7 +112,7 @@ const EditAgentPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 pt-8" dir="rtl">
-      <div className="max-w-5xl mx-auto px-4">
+      <div className="max-w-7xl mx-auto px-4">
         <div className="bg-white rounded-t-[10px] shadow-lg p-8 pb-0">
           <div className='w-fit mx-auto'>
             <div className="flex items-center justify-center mb-2 w-fit mx-auto">
@@ -126,7 +128,7 @@ const EditAgentPage: React.FC = () => {
           <div className="mb-6 flex flex-col md:flex-row gap-4 items-center justify-between">
             <input
               type="text"
-              placeholder="ابحث برقم الهوية..."
+              placeholder="البحث ..."
               value={search}
               onChange={e => setSearch(e.target.value)}
               className="w-full md:w-1/3 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -137,7 +139,7 @@ const EditAgentPage: React.FC = () => {
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">اسم الوكيل</th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">رقم البطاقة</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">رقم الحدود</th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">رقم الجوال</th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">اسم الوكيل</th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">رقم جوال الوكيل</th>
@@ -167,7 +169,12 @@ const EditAgentPage: React.FC = () => {
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{agent.managerName}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{agent.managerPhone}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{agent.birthDate}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{agent.status}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{
+                        agent.status === 'pending' ? 'قيد الانتظار' :
+                        agent.status === 'accepted' ? 'مقبول' :
+                        agent.status === 'rejected' ? 'مرفوض' :
+                        agent.status
+                      }</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{agent.visaType}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         <button
@@ -204,7 +211,7 @@ const EditAgentPage: React.FC = () => {
                   </div>
                 </div>
                 <div className="relative">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">رقم الهوية</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">رقم الحدود</label>
                   <div className="relative">
                     <CreditCard className="absolute right-3 top-3 h-5 w-5 text-gray-400" />
                     <input type="text" name="cardNumber" value={editForm.cardNumber} onChange={handleEditChange} className="w-full pr-10 pl-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200" />

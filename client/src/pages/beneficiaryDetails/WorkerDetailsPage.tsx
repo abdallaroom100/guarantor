@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, User, Phone, CreditCard, Calendar, DollarSign, FileText, Edit, Trash2, Plus } from 'lucide-react';
 import hotToast from '../../common/hotToast';
+import moment from 'moment-hijri';
 
 interface Worker {
   _id: string;
@@ -94,6 +95,18 @@ const WorkerDetailsPage: React.FC = () => {
       bgColor: 'bg-green-50'
     };
   };
+
+  const hijriMonths = [
+    'محرم', 'صفر', 'ربيع الأول', 'ربيع الآخر', 'جمادى الأولى', 'جمادى الآخرة',
+    'رجب', 'شعبان', 'رمضان', 'شوال', 'ذو القعدة', 'ذو الحجة'
+  ];
+  function formatHijriDate(dateString: string) {
+    if (!dateString) return '';
+    const m = moment(dateString, 'YYYY-MM-DD').format('iYYYY-iMM-iDD');
+    const [year, month, day] = m.split('-');
+    const monthName = hijriMonths[parseInt(month, 10) - 1] || '';
+    return `${day} ${monthName} ${year} هـ`;
+  }
 
   // احذف دوال handlePaymentStatusChange و isMonthPaid وأي أكواد مرتبطة بها
 
@@ -198,7 +211,7 @@ const WorkerDetailsPage: React.FC = () => {
                   <Calendar className="h-4 w-4 text-red-500" />
                   <span className="text-sm text-gray-500">تاريخ انتهاء الإقامة</span>
                 </div>
-                <p className="text-lg font-semibold text-gray-800">{formatDate(worker.residenceEndDate)}</p>
+                <p className="text-lg font-semibold text-gray-800">{formatHijriDate(worker.residenceEndDate)}</p>
               </div>
               
               <div className="bg-white p-4 rounded-lg border border-gray-200">

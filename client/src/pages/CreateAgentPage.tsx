@@ -96,10 +96,10 @@ const CreateAgentPage: React.FC = () => {
                 </div>
               </div>
               <div className="relative">
-                <label className="block text-sm font-medium text-gray-700 mb-2">رقم الهوية</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">رقم الحدود</label>
                 <div className="relative">
                   <CreditCard className="absolute right-3 top-3 h-5 w-5 text-gray-400" />
-                  <input type="text" name="cardNumber" placeholder="رقم الهوية" value={agent.cardNumber} onChange={handleChange} className="w-full pr-10 pl-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 hover:bg-white" required />
+                  <input type="text" name="cardNumber" placeholder="رقم الحدود" value={agent.cardNumber} onChange={handleChange} className="w-full pr-10 pl-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 hover:bg-white" required />
                 </div>
               </div>
               <div className="relative">
@@ -165,8 +165,9 @@ const CreateAgentPage: React.FC = () => {
                 <div className="relative">
                   <select name="visaType" value={agent.visaType} onChange={handleChange} className="bg-white shadow-sm rounded-lg border-2 border-blue-200 focus:border-blue-500 px-2 py-2 pr-12 text-sm appearance-none transition-all duration-200 hover:border-blue-400">
                     <option value="">اختر نوع التأشيرة</option>
-                    <option value="أحادية">أحادية</option>
-                    <option value="متعددة">متعددة</option>
+                    <option value="زيارة">زيارة</option>
+                    <option value="عمرة">عمرة</option>
+                    <option value="عمل">عمل</option>
                   </select>
                   <span className="pointer-events-none absolute right-3 top-1/2 transform -translate-y-1/2 text-blue-400">
                     <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" /></svg>
