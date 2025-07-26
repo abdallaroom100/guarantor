@@ -1,6 +1,6 @@
 import express from "express"
 
-import {  createGuarantor, updateGuarantor, getWorkerWithGuarantor, getAllWorkers, getAllEndDateWorkers, getAllGuarantors, getGuarantor, getTempGuarantors, returnGuarantorFromTemp, deleteGuarantorTemporary } from "../controllers/user.controller.js"
+import {  createGuarantor, updateGuarantor, getWorkerWithGuarantor, getAllWorkers, getAllEndDateWorkers, getAllGuarantors, getGuarantor, getTempGuarantors, returnGuarantorFromTemp, deleteGuarantorTemporary, deleteGuarantor } from "../controllers/user.controller.js"
 
 
 const router = express.Router() 
@@ -18,6 +18,7 @@ router.get("/workers/get",getAllWorkers)
 router.get("/workers/endDate",getAllEndDateWorkers)
 router.post("/back/:id",returnGuarantorFromTemp)
 router.post("/temp/:id",deleteGuarantorTemporary)
+router.delete("/:id",deleteGuarantor)
 // router.delete("/delete/:userId",protectRoute,deleteUser)
 // router.post("/logout",protectRoute,logOut)
  

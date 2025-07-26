@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Save, User, Phone, CreditCard, Users, Edit, Trash2, Plus } from 'lucide-react';
 import { useGetGuarantor } from './Dashboard/hooks/bag/useGetGuarantor';
 import { useUpdateGuarantor } from './Dashboard/hooks/bag/useUpdateGuarantor';
+import { useDeleteGuarantorPermanently } from './Dashboard/hooks/useDeleteGuarantorPermanently';
 import hotToast from '../common/hotToast';
 import Modal from '../components/Modal';
 import axios from 'axios';
@@ -87,6 +88,7 @@ const EditGuarantorPage: React.FC = () => {
   const navigate = useNavigate();
   const { loading, error, guarantor, refetch } = useGetGuarantor(cardNumber || '');
   const { updateGuarantor, loading: updateLoading, error: updateError } = useUpdateGuarantor();
+  const { deleteGuarantorPermanently, loading: deletePermanentLoading, error: deletePermanentError, success: deletePermanentSuccess } = useDeleteGuarantorPermanently();
 
   // تحديث حالة الكفيل لتشمل تاريخ الميلاد
   const [formData, setFormData] = useState({
@@ -117,6 +119,7 @@ const EditGuarantorPage: React.FC = () => {
   const paginatedWorkers = formData.workers.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showPermanentDeleteModal, setShowPermanentDeleteModal] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [deleteError, setDeleteError] = useState('');
   const handleDelete = async () => {
@@ -131,6 +134,16 @@ const EditGuarantorPage: React.FC = () => {
       setDeleteError('حدث خطأ أثناء الحذف');
       setDeleteLoading(false);
     }
+  };
+
+  const handleDeletePermanently = async () => {
+    try {
+      await deleteGuarantorPermanently(formData._id);
+      setShowPermanentDeleteModal(false);
+      setTimeout(() => {
+        navigate(-1);
+      }, 200);
+    } catch {}
   };
 
   useEffect(() => {
@@ -803,7 +816,7 @@ const EditGuarantorPage: React.FC = () => {
           )}
 
           {/* Submit Button */}
-          <div className="flex justify-center mt-8">
+          <div className="flex justify-center flex-col items-center gap-2 mt-8">
             <button
               onClick={handleSubmit}
               disabled={updateLoading}
@@ -816,14 +829,26 @@ const EditGuarantorPage: React.FC = () => {
               <Save className="h-5 w-5" />
               {updateLoading ? 'جاري الحفظ...' : 'حفظ التعديلات'}
             </button>
-            <button
-              type="button"
-              onClick={() => setShowDeleteModal(true)}
-              className="ml-4 flex items-center gap-2 px-8 py-3 rounded-xl mr-4 font-semibold text-lg bg-gradient-to-r from-red-600 to-pink-600 text-white hover:from-red-700 hover:to-pink-700 transition-all duration-200"
-            >
-              <Trash2 className="h-5 w-5" />
-              حذف الكفيل
-            </button>
+            <div className='flex gap-2'>
+              <button
+                type="button"
+                onClick={() => setShowDeleteModal(true)}
+                disabled={deleteLoading}
+                className="flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-lg transition-all duration-200 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 bg-gradient-to-r from-orange-600 to-yellow-600 text-white hover:from-orange-700 hover:to-yellow-700"
+              >
+                <Trash2 className="h-5 w-5" />
+                {deleteLoading ? 'جاري الحذف...' : 'حذف مؤقت'}
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowPermanentDeleteModal(true)}
+                disabled={deletePermanentLoading}
+                className="flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-lg transition-all duration-200 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 bg-gradient-to-r from-red-600 to-pink-600 text-white hover:from-red-700 hover:to-pink-700"
+              >
+                <Trash2 className="h-5 w-5" />
+                {deletePermanentLoading ? 'جاري الحذف...' : 'حذف نهائي'}
+              </button>
+            </div>
           </div>
 
           {/* Error Display */}
@@ -834,19 +859,47 @@ const EditGuarantorPage: React.FC = () => {
               </div>
             </div>
           )}
+          {deletePermanentError && (
+            <div className="flex justify-center mt-4">
+              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                {deletePermanentError}
+              </div>
+            </div>
+          )}
+          {deletePermanentSuccess && (
+            <div className="flex justify-center mt-4">
+              <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+                تم حذف الكفيل نهائياً بنجاح
+              </div>
+            </div>
+          )}
         </div>
       </div>
       <Modal isOpen={showDeleteModal} onClose={() => setShowDeleteModal(false)}>
         <div className="text-center">
-          <div className="mb-4 text-2xl font-bold text-gray-800">تأكيد حذف الكفيل</div>
-          <div className="mb-6 text-gray-600">هل أنت متأكد أنك تريد حذف هذا الكفيل؟ لا يمكن التراجع عن هذا الإجراء.</div>
+          <div className="mb-4 text-2xl font-bold text-gray-800">تأكيد الحذف المؤقت</div>
+          <div className="mb-6 text-gray-600">هل أنت متأكد أنك تريد حذف هذا الكفيل مؤقتاً؟ يمكنك إرجاعه لاحقاً من صفحة الكفلاء المحذوفين.</div>
           <div className="flex justify-center gap-4">
-            <button onClick={handleDelete} disabled={deleteLoading} className="px-6 py-2 rounded-lg bg-gradient-to-r from-red-600 to-pink-600 text-white font-bold hover:from-red-700 hover:to-pink-700 transition">
-              {deleteLoading ? 'جاري الحذف...' : 'تأكيد الحذف'}
+            <button onClick={handleDelete} disabled={deleteLoading} className="px-6 py-2 rounded-lg bg-gradient-to-r from-orange-600 to-yellow-600 text-white font-bold hover:from-orange-700 hover:to-yellow-700 transition">
+              {deleteLoading ? 'جاري الحذف...' : 'تأكيد الحذف المؤقت'}
             </button>
             <button onClick={() => setShowDeleteModal(false)} className="px-6 py-2 rounded-lg bg-gray-200 text-gray-700 font-bold hover:bg-gray-300 transition">إلغاء</button>
           </div>
           {deleteError && <div className="text-red-600 mt-4 font-bold">{deleteError}</div>}
+        </div>
+      </Modal>
+
+      <Modal isOpen={showPermanentDeleteModal} onClose={() => setShowPermanentDeleteModal(false)}>
+        <div className="text-center">
+          <div className="mb-4 text-2xl font-bold text-red-800">تأكيد الحذف النهائي</div>
+          <div className="mb-6 text-gray-600">هل أنت متأكد أنك تريد حذف هذا الكفيل نهائياً؟ هذا الإجراء لا يمكن التراجع عنه.</div>
+          <div className="flex justify-center gap-4">
+            <button onClick={handleDeletePermanently} disabled={deletePermanentLoading} className="px-6 py-2 rounded-lg bg-gradient-to-r from-red-600 to-pink-600 text-white font-bold hover:from-red-700 hover:to-pink-700 transition">
+              {deletePermanentLoading ? 'جاري الحذف...' : 'تأكيد الحذف النهائي'}
+            </button>
+            <button onClick={() => setShowPermanentDeleteModal(false)} className="px-6 py-2 rounded-lg bg-gray-200 text-gray-700 font-bold hover:bg-gray-300 transition">إلغاء</button>
+          </div>
+          {deletePermanentError && <div className="text-red-600 mt-4 font-bold">{deletePermanentError}</div>}
         </div>
       </Modal>
     </div>

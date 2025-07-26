@@ -219,6 +219,25 @@ export const getTempAgents = async (req,res) =>{
       const agents  = await Agent.find({isDeleted:true}).sort({createdAt:-1})
       return res.status(200).json(agents)
   } catch (error) {
-      
+    console.log(`error in get temp agents function`);
+    console.log(error.message);
+    return res.status(500).json({ error: error.message });
+  }
+}
+
+export const deleteAgent = async (req,res) =>{
+  try {
+    const {id} = req.params
+    const agent = await Agent.findById(id)
+    if(!agent){
+      return res.status(400).json({error:"بيانات الكفيل هذه غير موجوده"})
+    }
+    
+    await Agent.findByIdAndDelete(id);
+    return res.status(200).json({ message: "تم حذف الكفيل نهائياً بنجاح" });
+  } catch (error) {
+    console.log(`error in delete agent function`);
+    console.log(error.message);
+    return res.status(500).json({ error: error.message });
   }
 }

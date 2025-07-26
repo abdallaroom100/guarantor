@@ -302,6 +302,23 @@ export const getTempGuarantors = async (req,res) =>{
   }
 }
 
+export const deleteGuarantor = async (req,res) =>{
+  try {
+    const {id} = req.params
+    const guarantor = await User.findById(id)
+    if(!guarantor){
+      return res.status(400).json({error:"بيانات الكفيل هذه غير موجوده"})
+    }
+    
+    await User.findByIdAndDelete(id);
+    return res.status(200).json({ message: "تم حذف الكفيل نهائياً بنجاح" });
+  } catch (error) {
+    console.log(`error in delete guarantor function`);
+    console.log(error.message);
+    return res.status(500).json({ error: error.message });
+  }
+}
+
 export const getWorkerWithGuarantor = async (req,res) =>{
  
    const {residenceNumber} = req.params

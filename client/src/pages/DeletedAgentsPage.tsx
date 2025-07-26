@@ -8,6 +8,7 @@ const DeletedAgentsPage: React.FC = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [showModal, setShowModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const fetchAgents = async () => {
@@ -39,6 +40,23 @@ const DeletedAgentsPage: React.FC = () => {
     } catch (err: any) {
       setError('حدث خطأ أثناء الإرجاع');
       setShowModal(false);
+      setSelectedId(null);
+    }
+  };
+
+  const handleDeletePermanently = async () => {
+    if (!selectedId) return;
+    setError('');
+    setSuccess('');
+    try {
+      await axios.delete(`/agent/${selectedId}`);
+      setSuccess('تم حذف التأشيرة نهائياً بنجاح');
+      setShowDeleteModal(false);
+      setSelectedId(null);
+      fetchAgents();
+    } catch (err: any) {
+      setError('حدث خطأ أثناء الحذف النهائي');
+      setShowDeleteModal(false);
       setSelectedId(null);
     }
   };
@@ -96,12 +114,20 @@ const DeletedAgentsPage: React.FC = () => {
                           }</td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{agent.visaType}</td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            <button
-                              className="bg-gradient-to-r from-emerald-500 to-blue-500 text-white px-4 py-1 rounded-lg hover:from-emerald-600 hover:to-blue-600 transition"
-                              onClick={() => { setSelectedId(agent._id); setShowModal(true); }}
-                            >
-                              ارجاع
-                            </button>
+                            <div className="flex gap-2">
+                              <button
+                                className="bg-gradient-to-r from-emerald-500 to-blue-500 text-white px-4 py-1 rounded-lg hover:from-emerald-600 hover:to-blue-600 transition"
+                                onClick={() => { setSelectedId(agent._id); setShowModal(true); }}
+                              >
+                                ارجاع
+                              </button>
+                              <button
+                                className="bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-1 rounded-lg hover:from-red-600 hover:to-red-700 transition"
+                                onClick={() => { setSelectedId(agent._id); setShowDeleteModal(true); }}
+                              >
+                                حذف نهائي
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       ))
@@ -120,6 +146,17 @@ const DeletedAgentsPage: React.FC = () => {
           <div className="flex justify-center gap-4">
             <button onClick={handleReturn} className="px-6 py-2 rounded-lg bg-gradient-to-r from-emerald-500 to-blue-500 text-white font-bold hover:from-emerald-600 hover:to-blue-600 transition">تأكيد الإرجاع</button>
             <button onClick={() => { setShowModal(false); setSelectedId(null); }} className="px-6 py-2 rounded-lg bg-gray-200 text-gray-700 font-bold hover:bg-gray-300 transition">إلغاء</button>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal isOpen={showDeleteModal} onClose={() => { setShowDeleteModal(false); setSelectedId(null); }}>
+        <div className="text-center">
+          <div className="mb-4 text-2xl font-bold text-red-800">تأكيد الحذف النهائي</div>
+          <div className="mb-6 text-gray-600">هل أنت متأكد أنك تريد حذف هذه التأشيرة نهائياً؟ هذا الإجراء لا يمكن التراجع عنه.</div>
+          <div className="flex justify-center gap-4">
+            <button onClick={handleDeletePermanently} className="px-6 py-2 rounded-lg bg-gradient-to-r from-red-500 to-red-600 text-white font-bold hover:from-red-600 hover:to-red-700 transition">تأكيد الحذف</button>
+            <button onClick={() => { setShowDeleteModal(false); setSelectedId(null); }} className="px-6 py-2 rounded-lg bg-gray-200 text-gray-700 font-bold hover:bg-gray-300 transition">إلغاء</button>
           </div>
         </div>
       </Modal>
