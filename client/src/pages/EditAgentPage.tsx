@@ -19,45 +19,6 @@ const EditAgentPage: React.FC = () => {
     String(agent.phone || '').includes(search)
   ) : [];
 
-  // Pagination state
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
-
-  // Reset page to 1 when search changes
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [search]);
-
-  // Paginated data
-  const paginatedAgents = filteredAgents.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
-  const pageCount = Math.ceil(filteredAgents.length / itemsPerPage);
-
-  // Pagination controls
-  const Pagination = () => (
-    <div className="flex justify-center items-center gap-2 mt-6 select-none mb-5">
-      <button
-        onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-        disabled={currentPage === 1}
-        className="px-5 h-10 rounded-full border-2 border-blue-500 bg-white text-blue-600 font-bold hover:bg-gradient-to-l hover:from-blue-100 hover:to-indigo-100 transition disabled:opacity-40 disabled:cursor-not-allowed shadow-sm"
-      >
-        السابق
-      </button>
-      <span className="flex items-center justify-center min-w-[40px] h-10 px-3 rounded-lg border-2 mx-0.5 font-bold bg-gradient-to-l from-blue-500 to-indigo-500 text-white border-blue-600 scale-110 ">
-        {currentPage}
-      </span>
-      <button
-        onClick={() => setCurrentPage((prev) => Math.min(prev + 1, pageCount))}
-        disabled={currentPage === pageCount || pageCount === 0}
-        className="px-5 h-10 rounded-full border-2 border-blue-500 bg-white text-blue-600 font-bold hover:bg-gradient-to-l hover:from-blue-100 hover:to-indigo-100 transition disabled:opacity-40 disabled:cursor-not-allowed shadow-sm"
-      >
-        التالي
-      </button>
-    </div>
-  );
-
   useEffect(() => {
     fetchAgents();
   }, []);
@@ -112,6 +73,31 @@ const EditAgentPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 pt-8" dir="rtl">
+      <style>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 8px;
+          height: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: #f1f5f9;
+          border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: linear-gradient(135deg, #10b981, #059669);
+          border-radius: 10px;
+          border: 2px solid #f1f5f9;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: linear-gradient(135deg, #059669, #047857);
+        }
+        .custom-scrollbar::-webkit-scrollbar-corner {
+          background: #f1f5f9;
+        }
+        .custom-scrollbar {
+          scrollbar-width: thin;
+          scrollbar-color: #10b981 #f1f5f9;
+        }
+      `}</style>
       <div className="max-w-7xl mx-auto px-4">
         <div className="bg-white rounded-t-[10px] shadow-lg p-8 pb-0">
           <div className='w-fit mx-auto'>
@@ -134,14 +120,14 @@ const EditAgentPage: React.FC = () => {
               className="w-full md:w-1/3 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
-          <div className="overflow-x-auto rounded-lg">
+          <div className="overflow-x-auto rounded-lg max-h-[69vh] overflow-y-auto custom-scrollbar">
             <table className="min-w-full bg-white border border-gray-200 rounded-lg">
-              <thead className="bg-gray-50">
+              <thead className="bg-gray-50 sticky top-0 z-10">
                 <tr>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">اسم الوكيل</th>
+                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider max-w-[150px]">اسم الوكيل</th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">رقم الحدود</th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">رقم الجوال</th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">اسم الوكيل</th>
+                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider max-w-[150px]">اسم الوكيل</th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">رقم جوال الوكيل</th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">تاريخ الميلاد</th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">حالة الطلب</th>
@@ -150,7 +136,7 @@ const EditAgentPage: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {paginatedAgents.length === 0 ? (
+                {filteredAgents.length === 0 ? (
                   <tr>
                     <td colSpan={9} className="py-8 text-center text-gray-500 text-lg">
                       <div className="flex flex-col items-center justify-center">
@@ -161,12 +147,20 @@ const EditAgentPage: React.FC = () => {
                     </td>
                   </tr>
                 ) : (
-                  paginatedAgents.map(agent => (
+                  filteredAgents.map(agent => (
                     <tr key={agent._id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{agent.fullName}</td>
+                      <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900 max-w-[150px]">
+                        <span className="truncate block w-full" title={agent.fullName}>
+                          {agent.fullName}
+                        </span>
+                      </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{agent.cardNumber}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{agent.phone}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{agent.managerName}</td>
+                      <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 max-w-[150px]">
+                        <span className="truncate block w-full" title={agent.managerName}>
+                          {agent.managerName}
+                        </span>
+                      </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{agent.managerPhone}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{agent.birthDate}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{
@@ -190,7 +184,6 @@ const EditAgentPage: React.FC = () => {
               </tbody>
             </table>
           </div>
-          <Pagination />
           {/* فورم التعديل */}
           {editForm && (
             <div className="mt-8 bg-blue-50 rounded-lg p-6 border border-blue-200">

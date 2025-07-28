@@ -112,49 +112,42 @@ const Reports: React.FC = () => {
     notExists: filteredWorkers.filter(w => getPaymentStatus(w).status === 'not-exists').length
   };
 
-  // Pagination state
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
-
-  // Reset page to 1 when filters/search change
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchTerm, selectedYear, selectedMonth]);
-
-  // Paginated data
-  const paginatedWorkers = filteredWorkers.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
-  const pageCount = Math.ceil(filteredWorkers.length / itemsPerPage);
-
-  // Pagination controls
-  const Pagination = () => (
-    <div className="flex justify-center items-center gap-2 mt-6 select-none mb-5">
-      <button
-        onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-        disabled={currentPage === 1}
-        className="px-5 h-10 rounded-full border-2 border-green-500 bg-white text-green-600 font-bold hover:bg-gradient-to-l hover:from-green-100 hover:to-emerald-100 transition disabled:opacity-40 disabled:cursor-not-allowed shadow-sm"
-        aria-label="السابق"
-      >
-        السابق
-      </button>
-      <span className="flex items-center justify-center min-w-[40px] h-10 px-3 rounded-lg border-2 mx-0.5 font-bold shadow-sm bg-gradient-to-l from-green-500 to-emerald-500 text-white border-green-600 scale-110 ">
-        {currentPage}
-      </span>
-      <button
-        onClick={() => setCurrentPage((prev) => Math.min(prev + 1, pageCount))}
-        disabled={currentPage === pageCount || pageCount === 0}
-        className="px-5 h-10 rounded-full border-2 border-green-500 bg-white text-green-600 font-bold hover:bg-gradient-to-l hover:from-green-100 hover:to-emerald-100 transition disabled:opacity-40 disabled:cursor-not-allowed shadow-sm"
-        aria-label="التالي"
-      >
-        التالي
-      </button>
-    </div>
-  );
+  // Use all filtered data without pagination
+  const displayData = filteredWorkers;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 pt-8" dir="rtl">
+      <style>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 8px;
+          height: 8px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: #f1f5f9;
+          border-radius: 10px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: linear-gradient(135deg, #10b981, #059669);
+          border-radius: 10px;
+          border: 2px solid #f1f5f9;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: linear-gradient(135deg, #059669, #047857);
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-corner {
+          background: #f1f5f9;
+        }
+        
+        /* Firefox */
+        .custom-scrollbar {
+          scrollbar-width: thin;
+          scrollbar-color: #10b981 #f1f5f9;
+        }
+      `}</style>
       <div className="max-w-9xl mx-auto px-1 md:px-4">
         {/* Header */}
         <div className="bg-white rounded-t-[10px] shadow-lg p-8 pb-0">
@@ -287,56 +280,61 @@ const Reports: React.FC = () => {
                  </h3>
               </div>
 
-              {filteredWorkers.length > 0 ? (
-                <>
-                  <div className="overflow-x-auto">
-                    <table className="min-w-full">
-                      <thead className="bg-gray-50">
-                        <tr>
-                          <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">اسم العامل</th>
-                          <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">رقم الجوال</th>
-                          <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">رقم الإقامة</th>
-                          <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">اسم الكفيل</th>
-                          <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">تاريخ الإنشاء</th>
-                          <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">المبلغ</th>
-                          <th  className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider ">الملاحظات</th>
-                          <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">حالة الدفع</th>
-                        </tr>
-                      </thead>
-                      <tbody className="bg-white divide-y divide-gray-200">
-                        {paginatedWorkers.map((worker, index) => {
-                          const paymentStatus = getPaymentStatus(worker);
-                          return (
-                            <tr key={worker._id || index} className="hover:bg-gray-50">
-                              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{worker.fullName}</td>
-                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{worker.phone}</td>
-                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{worker.residenceNumber}</td>
-                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{worker.guarantorName || '-'}</td>
-                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {worker.createdAt ? formatDate(worker.createdAt) : '-'}
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{worker.price} ريال</td>
-                              <td className="px-6 py-4 text-sm text-gray-500 max-w-xs">
-                                {worker.notice ? (
-                                  <span className="text-blue-600 font-medium break-words">{worker.notice}</span>
-                                ) : (
-                                  <span className="text-gray-400">لا توجد ملاحظات</span>
-                                )}
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap">
-                                <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium border ${paymentStatus.color}`}>
-                                  {paymentStatus.icon}
-                                  {paymentStatus.text}
-                                </span>
-                              </td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                  </div>
-                  <Pagination />
-                </>
+              {displayData.length > 0 ? (
+                <div className="overflow-x-auto rounded-lg max-h-[69vh] overflow-y-auto custom-scrollbar">
+                  <table className="min-w-full bg-white border border-gray-200 rounded-lg">
+                    <thead className="bg-gray-50 sticky top-0 z-10">
+                      <tr>
+                        <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider max-w-[150px]">اسم العامل</th>
+                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">رقم الجوال</th>
+                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">رقم الإقامة</th>
+                        <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider max-w-[120px]">اسم الكفيل</th>
+                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">تاريخ الإنشاء</th>
+                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">المبلغ</th>
+                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[300px]">الملاحظات</th>
+                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">حالة الدفع</th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {displayData.map((worker: Worker, index: number) => {
+                        const paymentStatus = getPaymentStatus(worker);
+                        return (
+                          <tr key={worker._id || index} className="hover:bg-gray-50">
+                            <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900 max-w-[150px]">
+                              <span className="truncate block w-full" title={worker.fullName}>
+                                {worker.fullName}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{worker.phone}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{worker.residenceNumber}</td>
+                            <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 max-w-[120px]">
+                              <span className="truncate block w-full" title={worker.guarantorName || '-'}>
+                                {worker.guarantorName || '-'}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                              {worker.createdAt ? formatDate(worker.createdAt) : '-'}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{worker.price} ريال</td>
+                            <td className="px-6 py-4 text-sm text-gray-500 min-w-[300px]">
+                              {worker.notice ? (
+                                <span className="text-blue-600 font-medium break-words">{worker.notice}</span>
+                              ) : (
+                                <span className="text-gray-400">لا توجد ملاحظات</span>
+                              )}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium border ${paymentStatus.color}`}>
+                                {paymentStatus.icon}
+                                {paymentStatus.text}
+                              </span>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
               ) : (
                 <div className="text-center py-8">
                   <Users className="mx-auto h-12 w-12 text-gray-400" />

@@ -7,8 +7,6 @@ const EditReports: React.FC = () => {
   const navigate = useNavigate();
   const { loading, error, guarantors, refetch } = useGetAllGuarantors();
   const [searchTerm, setSearchTerm] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US');
@@ -23,17 +21,6 @@ const EditReports: React.FC = () => {
     guarantor.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     guarantor.phone?.toString().includes(searchTerm)
   );
-
-  // Pagination logic
-  const paginatedGuarantors = filteredGuarantors.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
-  const pageCount = Math.ceil(filteredGuarantors.length / itemsPerPage);
-
-  React.useEffect(() => {
-    setCurrentPage(1);
-  }, [searchTerm]);
 
   const handleEditClick = (cardNumber: number) => {
     navigate(`/edit-guarantor/${cardNumber}`);
@@ -141,11 +128,11 @@ const EditReports: React.FC = () => {
               </div>
 
               {filteredGuarantors.length > 0 ? (
-                <div className="overflow-x-auto">
-                  <table className="min-w-full">
-                    <thead className="bg-gray-50">
+                <div className="overflow-x-auto rounded-lg max-h-[69vh] overflow-y-auto custom-scrollbar">
+                  <table className="min-w-full bg-white border border-gray-200 rounded-lg">
+                    <thead className="bg-gray-50 sticky top-0 z-10">
                       <tr>
-                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">اسم الكفيل</th>
+                        <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider max-w-[150px]">اسم الكفيل</th>
                         <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">رقم الجوال</th>
                         <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">رقم الهوية</th>
                         <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">عدد العمال</th>
@@ -154,10 +141,12 @@ const EditReports: React.FC = () => {
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                      {paginatedGuarantors.map((guarantor, index) => (
+                      {filteredGuarantors.map((guarantor, index) => (
                         <tr key={guarantor._id || index} className="hover:bg-gray-50">
-                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                            {guarantor.fullName}
+                          <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900 max-w-[150px]">
+                            <span className="truncate block w-full" title={guarantor.fullName}>
+                              {guarantor.fullName}
+                            </span>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                             {guarantor.phone}
@@ -186,26 +175,6 @@ const EditReports: React.FC = () => {
                       ))}
                     </tbody>
                   </table>
-                  {/* Pagination Controls */}
-                  <div className="flex justify-center items-center gap-2 mt-6 select-none mb-5">
-                    <button
-                      onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                      disabled={currentPage === 1}
-                      className="px-5 h-10 rounded-full border-2 border-green-500 bg-white text-green-600 font-bold hover:bg-gradient-to-l hover:from-green-100 hover:to-emerald-100 transition disabled:opacity-40 disabled:cursor-not-allowed shadow-sm"
-                    >
-                      السابق
-                    </button>
-                    <span className="flex items-center justify-center min-w-[40px] h-10 px-3 rounded-lg border-2 mx-0.5 font-bold  bg-gradient-to-l from-green-500 to-emerald-500 text-white border-green-600 scale-110 shadow-lg">
-                      {currentPage}
-                    </span>
-                    <button
-                      onClick={() => setCurrentPage((prev) => Math.min(prev + 1, pageCount))}
-                      disabled={currentPage === pageCount || pageCount === 0}
-                      className="px-5 h-10 rounded-full border-2 border-green-500 bg-white text-green-600 font-bold hover:bg-gradient-to-l hover:from-green-100 hover:to-emerald-100 transition disabled:opacity-40 disabled:cursor-not-allowed shadow-sm"
-                    >
-                      التالي
-                    </button>
-                  </div>
                 </div>
               ) : (
                 <div className="text-center py-8">
@@ -222,6 +191,31 @@ const EditReports: React.FC = () => {
           )}
         </div>
       </div>
+      <style>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 8px;
+          height: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: #f1f5f9;
+          border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: linear-gradient(135deg, #10b981, #059669);
+          border-radius: 10px;
+          border: 2px solid #f1f5f9;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: linear-gradient(135deg, #059669, #047857);
+        }
+        .custom-scrollbar::-webkit-scrollbar-corner {
+          background: #f1f5f9;
+        }
+        .custom-scrollbar {
+          scrollbar-width: thin;
+          scrollbar-color: #10b981 #f1f5f9;
+        }
+      `}</style>
     </div>
   );
 };
