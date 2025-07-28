@@ -291,7 +291,7 @@ const Reports: React.FC = () => {
                         <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider max-w-[120px]">اسم الكفيل</th>
                         <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">تاريخ الإنشاء</th>
                         <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">المبلغ</th>
-                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[300px]">الملاحظات</th>
+                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider max-w-[260px]">الملاحظات</th>
                         <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">حالة الدفع</th>
                       </tr>
                     </thead>
@@ -315,10 +315,10 @@ const Reports: React.FC = () => {
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                               {worker.createdAt ? formatDate(worker.createdAt) : '-'}
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{worker.price} ريال</td>
-                            <td className="px-6 py-4 text-sm text-gray-500 min-w-[300px]">
+                            <td className="px-6 py-4  text-sm text-gray-500">{worker.price} ريال</td>
+                            <td className="px-6 py-4 text-sm text-gray-500 min-w-[260px] block max-w-[260px]">
                               {worker.notice ? (
-                                <span className="text-blue-600 font-medium break-words">{worker.notice}</span>
+                                <span className="text-blue-600 font-medium break-words block !max-w-[280px]">{worker.notice}</span>
                               ) : (
                                 <span className="text-gray-400">لا توجد ملاحظات</span>
                               )}
