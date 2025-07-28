@@ -367,6 +367,7 @@ const RecordsPage: React.FC = () => {
                           <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">تاريخ انتهاء الإقامة</th>
                           <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">حالة الإقامة</th>
                           <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">المبلغ</th>
+                          <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الملاحظات</th>
                           <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">اسم الكفيل</th>
                           <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">رقم حوال الكفيل</th>
                           <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الإجراءات</th>
@@ -394,6 +395,13 @@ const RecordsPage: React.FC = () => {
                                 </span>
                               </td>
                               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{worker.price} ريال</td>
+                              <td className="px-6 py-4 text-sm text-gray-500 min-w-xs">
+                                {worker.notice ? (
+                                  <span className="text-blue-600 font-medium break-words">{worker.notice}</span>
+                                ) : (
+                                  <span className="text-gray-400">لا توجد ملاحظات</span>
+                                )}
+                              </td>
                               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                 <button
                                   onClick={() => navigate(`/guarantor-details/${worker.guarantorCardNumber}`)}

@@ -139,6 +139,24 @@ const GuarantorDetailsPage: React.FC = () => {
                   </div>
                 </div>
 
+                <div className="grid md:grid-cols-2 gap-6 mt-4">
+                  <div className="bg-white p-4 rounded-lg border border-gray-200">
+                    <div className="flex items-center gap-2 mb-2">
+                      <FileText className="h-4 w-4 text-gray-500" />
+                      <span className="text-sm text-gray-500">رقم السجل</span>
+                    </div>
+                    <p className="text-lg font-semibold text-gray-800">{guarantor.recordNumber || 'غير محدد'}</p>
+                  </div>
+                  
+                  <div className="bg-white p-4 rounded-lg border border-gray-200">
+                    <div className="flex items-center gap-2 mb-2">
+                      <FileText className="h-4 w-4 text-gray-500" />
+                      <span className="text-sm text-gray-500">الرقم الموحد</span>
+                    </div>
+                    <p className="text-lg font-semibold text-gray-800">{guarantor.unifiedNumber || 'غير محدد'}</p>
+                  </div>
+                </div>
+
                 <div className="mt-4 grid md:grid-cols-2 gap-6">
                   <div className="bg-white p-4 rounded-lg border border-gray-200">
                     <div className="flex items-center gap-2 mb-2">
@@ -178,6 +196,7 @@ const GuarantorDetailsPage: React.FC = () => {
                           <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">تاريخ انتهاء الإقامة</th>
                           <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">حالة الإقامة</th>
                           <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">المبلغ</th>
+                          <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الملاحظات</th>
                           <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">سجل المدفوعات</th>
                         </tr>
                       </thead>
@@ -196,6 +215,13 @@ const GuarantorDetailsPage: React.FC = () => {
                                 </span>
                               </td>
                               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{worker.price} ريال</td>
+                              <td className="px-6 py-4 text-sm text-gray-500 max-w-xs">
+                                {worker.notice ? (
+                                  <span className="text-blue-600 font-medium break-words">{worker.notice}</span>
+                                ) : (
+                                  <span className="text-gray-400">لا توجد ملاحظات</span>
+                                )}
+                              </td>
                               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                 {worker.paysHistory && Object.keys(worker.paysHistory).length > 0 ? (
                                   <div>

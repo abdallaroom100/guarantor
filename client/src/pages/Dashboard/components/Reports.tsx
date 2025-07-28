@@ -299,6 +299,7 @@ const Reports: React.FC = () => {
                           <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">اسم الكفيل</th>
                           <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">تاريخ الإنشاء</th>
                           <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">المبلغ</th>
+                          <th  className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider ">الملاحظات</th>
                           <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">حالة الدفع</th>
                         </tr>
                       </thead>
@@ -315,6 +316,13 @@ const Reports: React.FC = () => {
                                 {worker.createdAt ? formatDate(worker.createdAt) : '-'}
                               </td>
                               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{worker.price} ريال</td>
+                              <td className="px-6 py-4 text-sm text-gray-500 max-w-xs">
+                                {worker.notice ? (
+                                  <span className="text-blue-600 font-medium break-words">{worker.notice}</span>
+                                ) : (
+                                  <span className="text-gray-400">لا توجد ملاحظات</span>
+                                )}
+                              </td>
                               <td className="px-6 py-4 whitespace-nowrap">
                                 <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium border ${paymentStatus.color}`}>
                                   {paymentStatus.icon}

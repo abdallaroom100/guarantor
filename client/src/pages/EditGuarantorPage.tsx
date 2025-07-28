@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Save, User, Phone, CreditCard, Users, Edit, Trash2, Plus } from 'lucide-react';
+import { ArrowLeft, Save, User, Phone, CreditCard, Users, Edit, Trash2, Plus, FileText } from 'lucide-react';
 import { useGetGuarantor } from './Dashboard/hooks/bag/useGetGuarantor';
 import { useUpdateGuarantor } from './Dashboard/hooks/bag/useUpdateGuarantor';
 import { useDeleteGuarantorPermanently } from './Dashboard/hooks/useDeleteGuarantorPermanently';
@@ -34,6 +34,8 @@ interface Guarantor {
   fullName: string;
   phone: string;
   cardNumber: string;
+  recordNumber?: string;
+  unifiedNumber?: string;
   birthDate?: string;
   birthYear?: string;
   birthMonth?: string;
@@ -90,12 +92,14 @@ const EditGuarantorPage: React.FC = () => {
   const { updateGuarantor, loading: updateLoading, error: updateError } = useUpdateGuarantor();
   const { deleteGuarantorPermanently, loading: deletePermanentLoading, error: deletePermanentError, success: deletePermanentSuccess } = useDeleteGuarantorPermanently();
 
-  // تحديث حالة الكفيل لتشمل تاريخ الميلاد
+  // تحديث حالة الكفيل لتشمل تاريخ الميلاد والحقول الجديدة
   const [formData, setFormData] = useState({
     _id: '', // Add _id to formData
     fullName: '',
     phone: '',
     cardNumber: '',
+    recordNumber: '',
+    unifiedNumber: '',
     birthYear: '',
     birthMonth: '',
     birthDay: '',
@@ -192,6 +196,8 @@ const EditGuarantorPage: React.FC = () => {
         fullName: guarantor.fullName || '',
         phone: guarantor.phone?.toString() || '',
         cardNumber: guarantor.cardNumber?.toString() || '',
+        recordNumber: guarantor.recordNumber || '',
+        unifiedNumber: guarantor.unifiedNumber || '',
         birthYear,
         birthMonth,
         birthDay,
@@ -343,6 +349,8 @@ const EditGuarantorPage: React.FC = () => {
         fullName: formData.fullName,
         phone: formData.phone,
         cardNumber: formData.cardNumber,
+        recordNumber: formData.recordNumber || undefined,
+        unifiedNumber: formData.unifiedNumber || undefined,
         birthDate: formData.birthYear && formData.birthMonth && formData.birthDay
           ? `${formData.birthYear}-${formData.birthMonth.padStart(2, '0')}-${formData.birthDay.padStart(2, '0')}`
           : '',
@@ -502,6 +510,40 @@ const EditGuarantorPage: React.FC = () => {
                 {guarantorErrors.cardNumber && (
                   <div className="text-red-500 text-xs mt-1">{guarantorErrors.cardNumber}</div>
                 )}
+              </div>
+              
+              <div className="relative">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  رقم السجل
+                </label>
+                <div className="relative">
+                  <FileText className="absolute right-3 top-3 h-5 w-5 text-gray-400" />
+                  <input
+                    type="text"
+                    name="recordNumber"
+                    placeholder="أدخل رقم السجل (اختياري)"
+                    value={formData.recordNumber}
+                    onChange={handleGuarantorChange}
+                    className="w-full pr-10 pl-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200"
+                  />
+                </div>
+              </div>
+              
+              <div className="relative">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  الرقم الموحد
+                </label>
+                <div className="relative">
+                  <FileText className="absolute right-3 top-3 h-5 w-5 text-gray-400" />
+                  <input
+                    type="text"
+                    name="unifiedNumber"
+                    placeholder="أدخل الرقم الموحد (اختياري)"
+                    value={formData.unifiedNumber}
+                    onChange={handleGuarantorChange}
+                    className="w-full pr-10 pl-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200"
+                  />
+                </div>
               </div>
               <div className="relative">
                 <label className="block text-sm font-medium text-gray-700 mb-2">تاريخ الميلاد</label>

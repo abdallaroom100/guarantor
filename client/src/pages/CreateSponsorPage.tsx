@@ -57,8 +57,17 @@ function hijriToGregorian(year: string, monthName: string, day: string) {
 
 const CreateSponsorPage: React.FC = () => {
   const { createGuarantor, loading, error, isCreated, setIsCreated } = useCreateGuarantor();
-  // تحديث حالة الكفيل لتشمل تاريخ الميلاد
-  const [sponsor, setSponsor] = useState({ name: '', phone: '', id: '', birthYear: '', birthMonth: '', birthDay: '' });
+  // تحديث حالة الكفيل لتشمل تاريخ الميلاد والحقول الجديدة
+  const [sponsor, setSponsor] = useState({ 
+    name: '', 
+    phone: '', 
+    id: '', 
+    birthYear: '', 
+    birthMonth: '', 
+    birthDay: '',
+    recordNumber: '',
+    unifiedNumber: ''
+  });
   const [employees, setEmployees] = useState<Employee[]>([
     { name: '', phone: '', residency: '', amount: '', expiryYear: '', expiryMonth: '', expiryDay: '', birthYear: '', birthMonth: '', birthDay: '' },
 
@@ -66,7 +75,16 @@ const CreateSponsorPage: React.FC = () => {
 
   // دالة لتفريغ جميع الحقول
   const resetForm = () => {
-    setSponsor({ name: '', phone: '', id: '', birthYear: '', birthMonth: '', birthDay: '' });
+    setSponsor({ 
+      name: '', 
+      phone: '', 
+      id: '', 
+      birthYear: '', 
+      birthMonth: '', 
+      birthDay: '',
+      recordNumber: '',
+      unifiedNumber: ''
+    });
     setEmployees([{ name: '', phone: '', residency: '', amount: '', expiryYear: '', expiryMonth: '', expiryDay: '', birthYear: '', birthMonth: '', birthDay: '' }]);
   };
 
@@ -123,6 +141,8 @@ const CreateSponsorPage: React.FC = () => {
         birthDate: sponsor.birthYear && sponsor.birthMonth && sponsor.birthDay
           ? `${sponsor.birthYear}-${sponsor.birthMonth.padStart(2, '0')}-${sponsor.birthDay.padStart(2, '0')}`
           : '',
+        recordNumber: sponsor.recordNumber || undefined,
+        unifiedNumber: sponsor.unifiedNumber || undefined,
         workers: employeesWithFormattedDates
       };
       
@@ -217,6 +237,40 @@ const CreateSponsorPage: React.FC = () => {
                     onChange={handleSponsorChange}
                     className="w-full pr-10 pl-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 hover:bg-white"
                     required
+                  />
+                </div>
+              </div>
+              
+              <div className="relative">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  رقم السجل
+                </label>
+                <div className="relative">
+                  <FileText className="absolute right-3 top-3 h-5 w-5 text-gray-400" />
+                  <input
+                    type="text"
+                    name="recordNumber"
+                    placeholder="أدخل رقم السجل (اختياري)"
+                    value={sponsor.recordNumber}
+                    onChange={handleSponsorChange}
+                    className="w-full pr-10 pl-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 hover:bg-white"
+                  />
+                </div>
+              </div>
+              
+              <div className="relative">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  الرقم الموحد
+                </label>
+                <div className="relative">
+                  <FileText className="absolute right-3 top-3 h-5 w-5 text-gray-400" />
+                  <input
+                    type="text"
+                    name="unifiedNumber"
+                    placeholder="أدخل الرقم الموحد (اختياري)"
+                    value={sponsor.unifiedNumber}
+                    onChange={handleSponsorChange}
+                    className="w-full pr-10 pl-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 hover:bg-white"
                   />
                 </div>
               </div>

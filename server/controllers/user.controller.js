@@ -20,7 +20,7 @@ export const getCurrentUser = async (req, res) => {
 };
  
 export const createGuarantor = async (req, res) => {
-  const { fullName, phone, cardNumber, price, workers, birthDate } = req.body;
+  const { fullName, phone, cardNumber, price, workers, birthDate, recordNumber, unifiedNumber } = req.body;
   console.log(req.body)
   try {
     if (!fullName || !phone || !cardNumber || !workers?.length || !birthDate) {
@@ -108,7 +108,9 @@ export const createGuarantor = async (req, res) => {
       workers,
       cardNumber,
       price,
-      birthDate
+      birthDate,
+      recordNumber,
+      unifiedNumber
     });
     // generateToken(newUser._id, res,req);
     res.status(200).json(newUser);
@@ -122,7 +124,7 @@ export const createGuarantor = async (req, res) => {
 
 export const updateGuarantor = async (req, res) => {
   const { cardNumber: cardId } = req.params;
-  const { fullName, phone, workers,cardNumber, birthDate } = req.body;
+  const { fullName, phone, workers,cardNumber, birthDate, recordNumber, unifiedNumber } = req.body;
 
   try {
     if (!fullName || !phone || !cardNumber || !workers?.length || !birthDate) {
@@ -154,6 +156,14 @@ export const updateGuarantor = async (req, res) => {
         return res.status(400).json({ error: "رقم الهاتف يجب أن يحتوي على 10 أرقام" });
       }
       guarantor.phone = phone;
+    }
+
+    if (recordNumber !== undefined) {
+      guarantor.recordNumber = recordNumber;
+    }
+
+    if (unifiedNumber !== undefined) {
+      guarantor.unifiedNumber = unifiedNumber;
     }
 
 

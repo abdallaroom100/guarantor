@@ -22,6 +22,8 @@ interface Guarantor {
   fullName: string;
   phone: number;
   cardNumber: number;
+  recordNumber?: string;
+  unifiedNumber?: string;
   workers: Worker[];
   createdAt?: string;
   birthDate?: string; // Added birthDate to Guarantor interface
@@ -233,6 +235,22 @@ const GuarantorDetailsPage: React.FC = () => {
               
               <div className="bg-white p-4 rounded-lg border border-gray-200">
                 <div className="flex items-center gap-2 mb-2">
+                  <FileText className="h-4 w-4 text-blue-500" />
+                  <span className="text-sm text-gray-500">رقم السجل</span>
+                </div>
+                <p className="text-lg font-semibold text-gray-800">{guarantor.recordNumber || 'غير محدد'}</p>
+              </div>
+              
+              <div className="bg-white p-4 rounded-lg border border-gray-200">
+                <div className="flex items-center gap-2 mb-2">
+                  <FileText className="h-4 w-4 text-indigo-500" />
+                  <span className="text-sm text-gray-500">الرقم الموحد</span>
+                </div>
+                <p className="text-lg font-semibold text-gray-800">{guarantor.unifiedNumber || 'غير محدد'}</p>
+              </div>
+              
+              <div className="bg-white p-4 rounded-lg border border-gray-200">
+                <div className="flex items-center gap-2 mb-2">
                   <Calendar className="h-4 w-4 text-orange-500" />
                   <span className="text-sm text-gray-500">تاريخ الإنشاء</span>
                 </div>
@@ -316,6 +334,17 @@ const GuarantorDetailsPage: React.FC = () => {
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">المبلغ</label>
                           <p className="text-lg font-semibold text-gray-800">{worker.price} ريال</p>
+                        </div>
+                        
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">الملاحظات</label>
+                          <p className="text-lg font-semibold text-gray-800 max-w-xs">
+                            {worker.notice ? (
+                              <span className="text-blue-600 break-words">{worker.notice}</span>
+                            ) : (
+                              <span className="text-gray-400">لا توجد ملاحظات</span>
+                            )}
+                          </p>
                         </div>
                       </div>
                       

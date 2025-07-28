@@ -58,6 +58,14 @@
           required:true,
           unique:true
       },
+      recordNumber: {
+          type: String,
+          required: false
+      },
+      unifiedNumber: {
+          type: String,
+          required: false
+      },
       workers:{
         type:[workerSchema],
         required:true,

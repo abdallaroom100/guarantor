@@ -21,6 +21,8 @@ export interface Guarantor {
   fullName: string;
   phone: number;
   cardNumber: number;
+  recordNumber?: string;
+  unifiedNumber?: string;
   price: number;
   workers: Worker[];
   createdAt: string;
