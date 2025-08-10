@@ -394,7 +394,7 @@ const Landing: React.FC = () => {
             <div className="swiper-wrapper">
               <div className="swiper-slide">
                 <div className="testimonial-card-modern">
-                  <img src="https://cdn.pixabay.com/photo/2017/08/30/12/45/girl-2696947_1280.jpg" alt="أحمد محمد" className="testimonial-image-modern" />
+                  <img src="https://cdn.pixabay.com/photo/2017/08/30/12/45/girl-2696947_1280.jpg" loading='lazy' alt="أحمد محمد" className="testimonial-image-modern" />
                   <p className="testimonial-text-modern">"💯 خدمة ممتازة وسرعة فائقة في إنجاز المعاملات. أنصح الجميع بالتعامل معهم لأنهم محترفون حقاً"</p>
                   <h5 className="testimonial-author-modern">أحمد محمد</h5>
                   <p className="testimonial-position-modern">مدير شركة</p>
@@ -409,7 +409,7 @@ const Landing: React.FC = () => {
               </div>
               <div className="swiper-slide">
                 <div className="testimonial-card-modern">
-                  <img src="https://cdn.pixabay.com/photo/2016/11/29/13/14/attractive-1869761_1280.jpg" alt="سارة أحمد" className="testimonial-image-modern" />
+                  <img src="https://cdn.pixabay.com/photo/2016/11/29/13/14/attractive-1869761_1280.jpg" loading='lazy' alt="سارة أحمد" className="testimonial-image-modern" />
                   <p className="testimonial-text-modern">"🌟 فريق محترف ومتخصص. ساعدوني في إنجاز جميع معاملاتي بسهولة تامة ودون أي تعقيدات"</p>
                   <h5 className="testimonial-author-modern">سارة أحمد</h5>
                   <p className="testimonial-position-modern">مستثمرة</p>
@@ -424,7 +424,7 @@ const Landing: React.FC = () => {
               </div>
               <div className="swiper-slide">
                 <div className="testimonial-card-modern">
-                  <img src="https://cdn.pixabay.com/photo/2015/01/08/18/29/entrepreneur-593358_1280.jpg" alt="محمد علي" className="testimonial-image-modern" />
+                  <img src="https://cdn.pixabay.com/photo/2015/01/08/18/29/entrepreneur-593358_1280.jpg" loading='lazy' alt="محمد علي" className="testimonial-image-modern" />
                   <p className="testimonial-text-modern">"👌 أسعار معقولة وخدمة عملاء ممتازة. أوصي بالتعامل معهم بكل ثقة لجودة خدماتهم"</p>
                   <h5 className="testimonial-author-modern">محمد علي</h5>
                   <p className="testimonial-position-modern">رجل أعمال</p>
