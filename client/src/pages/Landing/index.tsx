@@ -276,7 +276,7 @@ const Landing: React.FC = () => {
         <div className="swiper hero-swiper" dir="rtl">
           <div className="swiper-wrapper">
             <div className="swiper-slide ">
-              <img className="hero-image" src="/yousef/HOME.webp" alt="الشريحة 1" />
+              <img className="hero-image" loading='lazy' src="/yousef/HOME.webp" alt="الشريحة 1" />
               <div className="hero-caption-3d">
                 <div className="hero-bg"></div>
                 <h1>🏆 خدمات تعقيب معتمدة ومضمونة</h1>
@@ -284,7 +284,7 @@ const Landing: React.FC = () => {
               </div>
             </div>
             <div className="swiper-slide">
-              <img className="hero-image" src="https://cdn.pixabay.com/photo/2020/02/26/06/38/business-4885470_1280.jpg" alt="الشريحة 2" />
+              <img className="hero-image" loading='lazy' src="" alt="الشريحة 2" />
               <div className="hero-caption-3d">
                 <div className="hero-bg"></div>
                 <h1>🌐 نخدمك في جميع المنصات الحكومية</h1>
@@ -292,7 +292,7 @@ const Landing: React.FC = () => {
               </div>
             </div>
             <div className="swiper-slide">
-              <img className="hero-image" src="https://cdn.pixabay.com/photo/2017/08/06/00/24/office-2585627_1280.jpg" alt="الشريحة 3" />
+              <img className="hero-image" loading='lazy' src="" alt="الشريحة 3" />
               <div className="hero-caption-3d">
                 <div className="hero-bg"></div>
                 <h1>⚡ احترافية وسرعة في إنجاز المعاملات</h1>
@@ -341,7 +341,7 @@ const Landing: React.FC = () => {
               <p>📋 إصدار وتجديد الرخص، خدمات الأنشطة التجارية عبر منصة بلدي الرسمية بسرعة واحترافية.</p>
             </div>
             <div className="service-card-3d">
-              <img src="https://cdn.pixabay.com/photo/2020/02/26/06/38/business-4885470_1280.jpg" alt="طاقات" height={80} />
+              <img src="" alt="طاقات" height={80} />
               <h5>💼 طاقات</h5>
               <p>👥 تسجيل الباحثين عن عمل، إدارة ملف المنشأة، وتحديث البيانات الرسمية بدقة عالية.</p>
             </div>
