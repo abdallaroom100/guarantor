@@ -15,7 +15,7 @@ const AdminLogin = () => {
   
   useEffect(() => {
      if(checkAdmin){
-       navigate("/")
+       navigate("/dashboard")
      }
   }, [checkAdmin]);
   
@@ -34,7 +34,7 @@ const AdminLogin = () => {
      if(admin){
       hotToast({type:"success",message:"تم تسجيل الدخول بنجاح"})
       dispatch(assignAdmin(admin))
-      navigate("/")
+      navigate("/dashboard")
      }
   };
 
@@ -112,7 +112,8 @@ const AdminLogin = () => {
           {/* Submit button */}
           <button
             type="submit"
-            className={`w-full mt-8 py-4 px-6 text-white font-semibold rounded-xl transition-all duration-300 transform
+            style={{borderRadius:"14px", marginTop:"15px"}}
+            className={`w-full mt-8 py-4 px-6 text-white font-semibold rounded-xl transition-all rounded-xl duration-300 transform
               bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700
               ${loading ? 'opacity-70 cursor-not-allowed scale-95' : 'hover:scale-[1.02] active:scale-98 shadow-lg hover:shadow-xl'}`}
             disabled={loading}

@@ -19,6 +19,7 @@ import EditGuarantorPage from "./pages/EditGuarantorPage";
 import EditSingleAgentPage from "./pages/EditSingleAgentPage";
 import { MoonLoader } from "react-spinners";
 import { DashboardProvider } from "./contexts/DashboardContext";
+import Landing from "./pages/Landing";
 
  
 
@@ -38,10 +39,11 @@ function App() {
           <MoonLoader />
         </div>}>
           <Routes>
-          
-           
+            
+            
+              <Route path="/" element={<Landing />} />
             <Route element={<Layout><AdminLayout /></Layout>}>
-              <Route path="/" element={<Dashboard />} />
+              <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/login" element={<AdminLogin />} />
               <Route path="/guarantor/:id" element={<GuarantorDetailsPage />} />
               <Route path="/records" element={<RecordsPage />} />

@@ -40,7 +40,7 @@ const useUpdateUserData = () => {
         userObj.hasAFamily = true
         localStorage.setItem("user", JSON.stringify(userObj));
         setTimeout(() => {
-          navigate("/")
+          navigate("/dashboard")
         }, 300);
       });
 

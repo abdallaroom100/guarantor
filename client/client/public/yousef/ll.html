@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css"/>
+</head>
+<body>
+    <div class="slider">
+        <div><img src="HOME.webp" alt="Slide 1"></div>
+        <div><img src="background-image2.webp" alt="Slide 2"></div>
+        <div><img src="image3.jpg" alt="Slide 3"></div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $('.slider').slick({
+                autoplay: true,
+                autoplaySpeed: 2000, // التأخير بين الشرائح بالميللي ثانية
+                dots: true, // إظهار نقاط التنقل
+            });
+        });
+    </script>
+</body>
+</html>
