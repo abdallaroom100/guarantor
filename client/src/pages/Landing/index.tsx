@@ -713,7 +713,7 @@ const Landing: React.FC = () => {
         .hero-3d { height: 100vh; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; perspective: 1000px; }
         .hero-swiper { width: 100%; height: 100%; }
         .hero-swiper .swiper-slide { position: relative; display: flex; align-items: center; justify-content: center; background: linear-gradient(45deg, #ffffff, #f8f9fa, #e9ecef); }
-        .hero-swiper .hero-image { position: absolute; inset: 0; width: 100vw !important; height: 100vh; object-fit: fill; filter: brightness(0.7) contrast(1.1); transition: transform 8s ease; }
+        .hero-swiper .hero-image { position: absolute; inset: 0; width: 100vw !important; height: 100vh !important; object-fit: fill; filter: brightness(0.7) contrast(1.1); transition: transform 8s ease; }
         .hero-swiper .swiper-slide-active .hero-image { transform: scale(1.05); }
         .hero-swiper .swiper-slide::before { content: ''; position: absolute; inset: 0; background: linear-gradient(45deg, rgba(255,255,255,0.85), rgba(237,208,15,0.1)); z-index: 1; }
         .hero-caption-3d { position: relative; z-index: 10; text-align: center; max-width: 900px; margin: 0 2rem; transform-style: preserve-3d; }
