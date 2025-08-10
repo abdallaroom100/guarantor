@@ -1,47 +1,44 @@
 import "./App.css";
-import { BrowserRouter, Routes, Route} from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { config } from "@fortawesome/fontawesome-svg-core";
-import Layout from "./Layout";
-// import "@fortawesome/fontawesome-svg-core/styles.css";
 import axios from "axios";
 import { Suspense, lazy } from "react";
-
-// Import all components directly
-
-
-import "@fortawesome/fontawesome-svg-core/styles.css";
-import Dashboard from "./pages/Dashboard";
-import { WorkerDetailsPage, GuarantorDetailsPage } from "./pages/beneficiaryDetails";
-
-import RecordsPage from "./pages/RecordsPage";
-import WorkersDetailsPage from "./pages/WorkersDetailsPage";
-import EditGuarantorPage from "./pages/EditGuarantorPage";
-import EditSingleAgentPage from "./pages/EditSingleAgentPage";
 import { MoonLoader } from "react-spinners";
 import { DashboardProvider } from "./contexts/DashboardContext";
 import Landing from "./pages/Landing";
+import Layout from "./Layout";
 
- 
+import "@fortawesome/fontawesome-svg-core/styles.css";
+config.autoAddCss = false;
+axios.defaults.withCredentials = true;
 
+// Lazy load for dashboard-related pages
 const AdminLayout = lazy(() => import("./layouts/AdminLayout"));
 const AdminLogin = lazy(() => import("./pages/AdminLogin"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const WorkerDetailsPage = lazy(() => import("./pages/beneficiaryDetails").then(m => ({ default: m.WorkerDetailsPage })));
+const GuarantorDetailsPage = lazy(() => import("./pages/beneficiaryDetails").then(m => ({ default: m.GuarantorDetailsPage })));
+const RecordsPage = lazy(() => import("./pages/RecordsPage"));
+const WorkersDetailsPage = lazy(() => import("./pages/WorkersDetailsPage"));
+const EditGuarantorPage = lazy(() => import("./pages/EditGuarantorPage"));
+const EditSingleAgentPage = lazy(() => import("./pages/EditSingleAgentPage"));
 
-axios.defaults.withCredentials = true;   
-config.autoAddCss = false;
-
-function App() { 
-
-  
-  return ( 
+function App() {
+  return (
     <BrowserRouter>
       <DashboardProvider>
-        <Suspense fallback={<div className="w-full h-screen flex justify-center items-center">
-          <MoonLoader />
-        </div>}>
+        <Suspense
+          fallback={
+            <div className="w-full h-screen flex justify-center items-center">
+              <MoonLoader />
+            </div>
+          }
+        >
           <Routes>
-            
-            
-              <Route path="/" element={<Landing />} />
+            {/* Landing page loads instantly */}
+            <Route path="/" element={<Landing />} />
+
+            {/* Dashboard pages are lazy loaded */}
             <Route element={<Layout><AdminLayout /></Layout>}>
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/login" element={<AdminLogin />} />
