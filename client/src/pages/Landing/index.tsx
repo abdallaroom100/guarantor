@@ -265,7 +265,7 @@ const Landing: React.FC = () => {
               </ul>
               
               {/* Contact Button */}
-              <a className="btn btn-contact ms-3 text-nowrap" style={{display:"flex",alignItems:"center",justifyContent:"center" ,gap:"0.64rem",width:"fit-content"}}   href="#contact">
+              <a className="btn btn-contact ms-3 text-nowrap" style={{display:"flex",alignItems:"center",justifyContent:"center" ,gap:"0.64rem",width:"fit-content"}}   href="https://api.whatsapp.com/send/?phone=%2B966546505469&type=phone_number&app_absent=0" target='_blank'>
                تواصل معنا
                <i className="bi bi-whatsapp" style={{scale:"1.5",transform:"translateY(2px)"}}></i>
               </a>
