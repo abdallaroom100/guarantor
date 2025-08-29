@@ -646,7 +646,7 @@ const Landing: React.FC = () => {
         .navbar-futuristic .btn-contact {
         max-width:300px;
 
-      
+            margin:auto !important;
           background: var(--gradient-primary);
           color: #ffffff;
           font-weight: 700;
