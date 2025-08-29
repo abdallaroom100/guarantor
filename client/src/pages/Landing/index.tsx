@@ -27,9 +27,9 @@ const Landing: React.FC = () => {
             const bsCollapse = new (window as any).bootstrap.Collapse(navbarCollapse, {
               toggle: false
             });
-            bsCollapse.hide();
+            bsCollapse.hide(); 
           }
-        });
+        }); 
       });
     };
 
@@ -245,7 +245,7 @@ const Landing: React.FC = () => {
             </button>
             
             {/* Navigation Links */}
-            <div className=" navbar-collapse" id="navbarNav">
+            <div className=" navbar-collapse"  id="navbarNav">
               <ul className="navbar-nav ms-auto align-items-center">
                 <li className="nav-item">
                   <a className="nav-link" href="#home">🏠 الرئيسية</a>
@@ -265,8 +265,9 @@ const Landing: React.FC = () => {
               </ul>
               
               {/* Contact Button */}
-              <a className="btn btn-contact ms-3 text-nowrap"   href="#contact">
-                📞 تواصل معنا
+              <a className="btn btn-contact ms-3 text-nowrap" style={{display:"flex",alignItems:"center",justifyContent:"center" ,gap:"0.64rem",width:"fit-content"}}   href="#contact">
+               تواصل معنا
+               <i className="bi bi-whatsapp" style={{scale:"1.5",transform:"translateY(2px)"}}></i>
               </a>
             </div>
           </div>
@@ -458,27 +459,27 @@ const Landing: React.FC = () => {
               </div>
               <div className="contact-details-modern">
                 <h4>📞 اتصل بنا</h4>
-                <p className="phone-number">0500000000</p>
+                <p className="phone-number">0546505469</p>
                 <span className="availability">متاح على مدار الساعة 24/7</span>
               </div>
             </div>
-            <div className="contact-item-modern">
+            {/* <div className="contact-item-modern">
               <div className="contact-icon-wrapper-modern">
                 <i className="bi bi-whatsapp"></i>
               </div>
               <div className="contact-details-modern">
                 <h4>💬 واتساب</h4>
-                <p className="phone-number">0500000000</p>
+                <p className="phone-number">0546505469</p>
                 <span className="availability">للتواصل السريع والفوري</span>
               </div>
-            </div>
+            </div> */}
             <div className="contact-item-modern">
               <div className="contact-icon-wrapper-modern">
                 <i className="bi bi-envelope-fill"></i>
               </div>
               <div className="contact-details-modern">
                 <h4>📧 البريد الإلكتروني</h4>
-                <p className="email">info@example.com</p>
+                <p className="email">a0560864269@gmail.com</p>
                 <span className="availability">رد خلال 24 ساعة مضمون</span>
               </div>
             </div>
@@ -645,7 +646,7 @@ const Landing: React.FC = () => {
         .navbar-futuristic .btn-contact {
         max-width:300px;
 
-        margin:0 !important;
+      
           background: var(--gradient-primary);
           color: #ffffff;
           font-weight: 700;
