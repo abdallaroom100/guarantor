@@ -2185,7 +2185,7 @@ transform:translateX(12px);
         /* Hero Section Layout */
         .hero-section {
           position: relative;
-          height: 100vh;
+          height: calc(100vh - 80px);
           display: flex;
           align-items: center;
           overflow: hidden;
