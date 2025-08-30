@@ -259,9 +259,10 @@ nav ul li a:hover,
 
 
 .swiper {
-  width: 80%;
+  width: 86%;
   height: 60vh;
   border-radius: 12px;
+  padding-inline: 24px !important;
   margin: 0 auto;
   margin-top: 20px;
   overflow: hidden;
