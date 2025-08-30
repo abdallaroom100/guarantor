@@ -2709,7 +2709,12 @@ transform:translateX(12px);
           flex-direction: column;
           gap: 15px;
         }
-
+.swiper.testimonials-swiper.swiper-initialized.swiper-horizontal.swiper-rtl.swiper-backface-hidden{
+margin-top:0 !important;
+}
+.section-header.fade-up.animate-in{
+ margin-bottom:   0px !important;
+}
         .footer-contact-item {
           display: flex;
           align-items: center;
