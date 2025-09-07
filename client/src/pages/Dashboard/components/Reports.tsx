@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Users, Calendar, Search, RefreshCw, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
 import { useGetAllWorkers } from '../hooks/bag/useGetAllWorkers';
+import axios from 'axios';
+import hotToast from '../../../common/hotToast';
 
 interface Worker {
   _id: string;
@@ -22,6 +24,7 @@ const Reports: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear().toString());
   const [selectedMonth, setSelectedMonth] = useState((new Date().getMonth() + 1).toString().padStart(2, '0'));
+  const [actionLoadingId, setActionLoadingId] = useState<string | null>(null);
  console.log(workers)
   // إنشاء قائمة السنوات (من 2025 إلى 2035)
   const years = Array.from({ length: 11 }, (_, i) => (2025 + i).toString());
@@ -114,6 +117,78 @@ const Reports: React.FC = () => {
 
   // Use all filtered data without pagination
   const displayData = filteredWorkers;
+
+  const handleTogglePayment = async (worker: Worker) => {
+    try {
+      setActionLoadingId(worker._id);
+      const { data } = await axios.get(`/guarantor/find/worker/${worker.residenceNumber}`);
+      const guarantor = data?.guarantor;
+
+      if (!guarantor || !Array.isArray(guarantor.workers)) {
+        hotToast({ type: 'error', message: 'تعذر جلب بيانات الكفيل' });
+        return;
+      }
+
+      const targetIndex = guarantor.workers.findIndex((w: any) => String(w.residenceNumber) === String(worker.residenceNumber));
+      if (targetIndex === -1) {
+        hotToast({ type: 'error', message: 'لم يتم العثور على العامل داخل بيانات الكفيل' });
+        return;
+      }
+
+      const updatedGuarantor = { ...guarantor };
+      const updatedWorkers = [...updatedGuarantor.workers];
+      const targetWorker = { ...updatedWorkers[targetIndex] };
+
+      if (!targetWorker.paysHistory) targetWorker.paysHistory = {};
+      if (!targetWorker.paysHistory[selectedYear]) targetWorker.paysHistory[selectedYear] = [];
+
+      const monthNumber = parseInt(selectedMonth);
+      const alreadyPaid = targetWorker.paysHistory[selectedYear].includes(monthNumber);
+
+      if (alreadyPaid) {
+        // إلغاء دفع الشهر الحالي
+        targetWorker.paysHistory[selectedYear] = targetWorker.paysHistory[selectedYear].filter((m: number) => m !== monthNumber);
+        if (targetWorker.paysHistory[selectedYear].length === 0) {
+          delete targetWorker.paysHistory[selectedYear];
+        }
+      } else {
+        // دفع الشهر الحالي
+        targetWorker.paysHistory[selectedYear].push(monthNumber);
+        targetWorker.paysHistory[selectedYear].sort((a: number, b: number) => a - b);
+      }
+
+      updatedWorkers[targetIndex] = targetWorker;
+      updatedGuarantor.workers = updatedWorkers;
+
+      const submitData = {
+        fullName: updatedGuarantor.fullName,
+        phone: updatedGuarantor.phone,
+        cardNumber: updatedGuarantor.cardNumber,
+        recordNumber: updatedGuarantor.recordNumber || undefined,
+        unifiedNumber: updatedGuarantor.unifiedNumber || undefined,
+        birthDate: updatedGuarantor.birthDate || '',
+        workers: updatedWorkers.map((w: any) => ({
+          fullName: w.fullName,
+          phone: w.phone,
+          residenceNumber: w.residenceNumber,
+          residenceEndDate: w.residenceEndDate,
+          birthDate: w.birthDate || '',
+          price: w.price,
+          notice: w.notice || '',
+          paysHistory: w.paysHistory || {}
+        }))
+      };
+
+      await axios.patch(`/guarantor/update/${guarantor.cardNumber}`, submitData);
+      hotToast({ type: 'success', message: alreadyPaid ? 'تم إلغاء دفع الشهر الحالي' : 'تم دفع الشهر الحالي' });
+      await refetch();
+    } catch (e: any) {
+      const msg = e?.response?.data?.error || 'حدث خطأ أثناء تحديث حالة الدفع';
+      hotToast({ type: 'error', message: msg });
+    } finally {
+      setActionLoadingId(null);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 pt-8" dir="rtl">
@@ -293,11 +368,14 @@ const Reports: React.FC = () => {
                         <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">المبلغ</th>
                         <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider max-w-[260px]">الملاحظات</th>
                         <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">حالة الدفع</th>
+                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الإجراء</th>
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
                       {displayData.map((worker: Worker, index: number) => {
                         const paymentStatus = getPaymentStatus(worker);
+                        const isRowLoading = actionLoadingId === worker._id;
+                        const isPaid = paymentStatus.status === 'paid';
                         return (
                           <tr key={worker._id || index} className="hover:bg-gray-50">
                             <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900 max-w-[150px]">
@@ -328,6 +406,15 @@ const Reports: React.FC = () => {
                                 {paymentStatus.icon}
                                 {paymentStatus.text}
                               </span>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <button
+                                disabled={isRowLoading || paymentStatus.status === 'not-exists'}
+                                onClick={() => handleTogglePayment(worker)}
+                                className={`${isPaid ? 'border-red-200 text-red-700 hover:bg-red-50' : 'border-green-200 text-green-700 hover:bg-green-50'} border px-3 py-1.5 rounded-md text-xs font-medium transition disabled:opacity-50 disabled:cursor-not-allowed`}
+                              >
+                                {isRowLoading ? 'جاري الحفظ...' : isPaid ? 'إلغاء دفع الشهر الحالي' : 'دفع الشهر الحالي'}
+                              </button>
                             </td>
                           </tr>
                         );
